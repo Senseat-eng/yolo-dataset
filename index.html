@@ -206,9 +206,9 @@
         
         <div id="loginSection" class="login-section">
             <h2>🚀 בוא נתחיל!</h2>
-            <p>הכנס את השם שלך כדי להתחיל לתרום תמונות</p>
-            <p style="font-size: 0.9em; opacity: 0.8;">(השם יישמר באנגלית למסד הנתונים)</p>
-            <input type="text" id="userName" class="user-input" placeholder="השם שלך" maxlength="20">
+            <p><strong>הכנס את השם שלך באנגלית בלבד</strong></p>
+            <p style="font-size: 0.9em; color: #ffeb3b; margin: 10px 0;">⚠️ רק אותיות אנגליות! דוגמה: Uri, Dan, Maya, Alex</p>
+            <input type="text" id="userName" class="user-input" placeholder="Your name in English only" maxlength="15">
             <br>
             <button onclick="login()" class="btn">התחל לתרום</button>
         </div>
@@ -282,7 +282,6 @@
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         let currentUser = '';
-        let currentUserSafe = ''; // גרסה בטוחה לשמירה
         let currentImage = null;
         let selectedCategory = null;
         let selectedRating = 7;
@@ -300,27 +299,6 @@
         
         const canvas = document.getElementById('imageCanvas');
         const ctx = canvas.getContext('2d');
-        
-        // פונקציה להמרת שמות בעברית לאנגלית
-        function hebrewToEnglish(text) {
-            const hebrewToEnglishMap = {
-                'א': 'a', 'ב': 'b', 'ג': 'g', 'ד': 'd', 'ה': 'h', 'ו': 'v', 'ז': 'z', 'ח': 'ch',
-                'ט': 't', 'י': 'y', 'כ': 'k', 'ך': 'k', 'ל': 'l', 'מ': 'm', 'ם': 'm', 'ן': 'n',
-                'נ': 'n', 'ס': 's', 'ע': 'a', 'פ': 'p', 'ף': 'f', 'צ': 'tz', 'ץ': 'tz', 'ק': 'k',
-                'ר': 'r', 'ש': 'sh', 'ת': 't', ' ': '_'
-            };
-            
-            return text.split('').map(char => hebrewToEnglishMap[char] || char).join('');
-        }
-        
-        // פונקציה לניקוי שמות קבצים
-        function sanitizeFileName(name) {
-            return name
-                .toLowerCase()
-                .replace(/[^a-z0-9]/g, '_')  // החלף כל מה שלא אנגלית/מספר ב-_
-                .replace(/_+/g, '_')         // החלף _ כפולים ב-_ יחיד
-                .replace(/^_|_$/g, '');      // הסר _ מההתחלה והסוף
-        }
         
         document.addEventListener('DOMContentLoaded', function() {
             initApp();
@@ -372,7 +350,6 @@
             const savedUser = localStorage.getItem('yolo_user');
             if (savedUser) {
                 currentUser = savedUser;
-                currentUserSafe = savedUser.toLowerCase();
                 document.getElementById('currentUser').textContent = currentUser;
                 showMainApp();
             }
@@ -380,25 +357,47 @@
         
         function login() {
             const userName = document.getElementById('userName').value.trim();
+            
+            // בדיקה 1: שם לא ריק
             if (!userName) {
-                showNotification('אנא הכנס שם', 'error');
+                showNotification('❌ אנא הכנס שם', 'error');
                 return;
             }
             
-            currentUser = userName;
-            currentUserSafe = sanitizeFileName(hebrewToEnglish(userName));
+            // בדיקה 2: רק אותיות אנגליות (a-z, A-Z)
+            const englishOnlyRegex = /^[a-zA-Z]+$/;
+            if (!englishOnlyRegex.test(userName)) {
+                showNotification('❌ השם חייב להכיל רק אותיות אנגליות! (a-z, A-Z)', 'error');
+                document.getElementById('userName').style.borderColor = 'red';
+                setTimeout(() => {
+                    document.getElementById('userName').style.borderColor = '';
+                }, 3000);
+                return;
+            }
             
+            // בדיקה 3: אורך מינימום
+            if (userName.length < 2) {
+                showNotification('❌ השם קצר מדי (מינימום 2 אותיות)', 'error');
+                return;
+            }
+            
+            // בדיקה 4: אורך מקסימום
+            if (userName.length > 15) {
+                showNotification('❌ השם ארוך מדי (מקסימום 15 אותיות)', 'error');
+                return;
+            }
+            
+            // השם תקין!
+            currentUser = userName;
             localStorage.setItem('yolo_user', currentUser);
             document.getElementById('currentUser').textContent = currentUser;
+            showNotification('✅ שם תקין! מתחיל...', 'success');
             showMainApp();
-            
-            console.log(`משתמש: ${currentUser} -> ${currentUserSafe}`);
         }
         
         function logout() {
             localStorage.removeItem('yolo_user');
             currentUser = '';
-            currentUserSafe = '';
             document.getElementById('loginSection').style.display = 'block';
             document.getElementById('mainApp').style.display = 'none';
             resetUpload();
@@ -562,9 +561,8 @@
                     canvas.toBlob(resolve, 'image/jpeg', 0.8);
                 });
                 
-                // שם קובץ בטוח - רק אנגלית, מספרים וקווים תחתונים
-                const fileName = `${Date.now()}_${currentUserSafe}_${Math.random().toString(36).substr(2, 6)}.jpg`;
-                console.log('שם קובץ בטוח:', fileName);
+                // שם קובץ פשוט עם שם המשתמש באנגלית
+                const fileName = `${Date.now()}_${currentUser.toLowerCase()}.jpg`;
                 
                 const { data: uploadData, error: uploadError } = await supabase.storage
                     .from('images')
@@ -585,8 +583,8 @@
                 const { data, error } = await supabase
                     .from('annotations')
                     .insert([{
-                        user_name: currentUser, // השם המקורי בעברית נשמר בDB
-                        image_path: fileName,   // אבל נתיב הקובץ באנגלית
+                        user_name: currentUser,
+                        image_path: fileName,
                         annotations: yoloAnnotations,
                         quality_rating: selectedRating,
                         created_at: new Date().toISOString()
@@ -605,8 +603,6 @@
                 
                 // גיבוי מקומי
                 saveLocally();
-                showNotification('שגיאה בשמירה לענן - נשמר מקומית', 'error');
-                resetUpload();
             }
         }
         
@@ -631,6 +627,8 @@
             });
             
             localStorage.setItem('yolo_dataset', JSON.stringify(localData));
+            showNotification('נשמר מקומית בטלפון', 'success');
+            resetUpload();
         }
         
         function showNotification(message, type) {
