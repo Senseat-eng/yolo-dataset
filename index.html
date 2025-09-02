@@ -510,12 +510,12 @@
     
     <script>
         // 🚨 IMPORTANT: Replace these with your Supabase credentials
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+        const SUPABASE_URL = 'https://kwoiohzrzmwkxkihkogb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3b2lvaHpyem13a3hraWhrb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4Mzk2MjIsImV4cCI6MjA3MjQxNTYyMn0.FK1zrvXNc-nmoV28Nr4K12MuwC_zAe5QPcZmwDSbCfw';
         
         // Initialize Supabase - only if credentials are provided
         let supabase = null;
-        if (SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY_HERE') {
+        if (SUPABASE_URL !== 'https://kwoiohzrzmwkxkihkogb.supabase.co' && SUPABASE_ANON_KEY !== 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3b2lvaHpyem13a3hraWhrb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4Mzk2MjIsImV4cCI6MjA3MjQxNTYyMn0.FK1zrvXNc-nmoV28Nr4K12MuwC_zAe5QPcZmwDSbCfw') {
             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         }
         
