@@ -108,6 +108,49 @@
             cursor: crosshair;
         }
         
+        .quality-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .quality-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .rating-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid white;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .rating-btn.selected {
+            background: #ffd700;
+            color: #333;
+            border-color: #ffd700;
+            transform: scale(1.2);
+        }
+        
+        .rating-text {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #ffd700;
+        }
+        
         .controls {
             display: flex;
             justify-content: center;
@@ -133,11 +176,23 @@
             z-index: 1000;
             transform: translateX(400px);
             transition: all 0.3s ease;
+            max-width: 300px;
         }
         
         .notification.show { transform: translateX(0); }
         .notification.success { background: linear-gradient(45deg, #56ab2f, #a8e6cf); }
         .notification.error { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
+        
+        .status-bar {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .status-bar.connected { background: rgba(76, 175, 80, 0.3); }
+        .status-bar.offline { background: rgba(244, 67, 54, 0.3); }
     </style>
 </head>
 <body>
@@ -145,6 +200,11 @@
         <div class="header">
             <h1>🥑 YOLO Dataset Creator</h1>
             <p>אוסף תמונות משותף לאימון מודל זיהוי</p>
+        </div>
+        
+        <!-- Status Bar -->
+        <div id="statusBar" class="status-bar offline">
+            <span id="statusText">⚠️ מסד נתונים לא מחובר - עובד במצב לוקלי</span>
         </div>
         
         <div id="loginSection" class="login-section">
@@ -189,6 +249,25 @@
                     
                     <p><strong>הוראות:</strong> בחר קטגוריה ואז לחץ וגרור על התמונה ליצירת ריבוע סביב המוצר</p>
                     
+                    <div class="quality-section">
+                        <h4>⭐ דרג את איכות המוצר:</h4>
+                        <p style="font-size: 0.9em; opacity: 0.8;">0 = גרוע, 10 = מעולה</p>
+                        <div class="quality-buttons">
+                            <button class="rating-btn" onclick="setRating(0)">0</button>
+                            <button class="rating-btn" onclick="setRating(1)">1</button>
+                            <button class="rating-btn" onclick="setRating(2)">2</button>
+                            <button class="rating-btn" onclick="setRating(3)">3</button>
+                            <button class="rating-btn" onclick="setRating(4)">4</button>
+                            <button class="rating-btn" onclick="setRating(5)">5</button>
+                            <button class="rating-btn" onclick="setRating(6)">6</button>
+                            <button class="rating-btn selected" onclick="setRating(7)">7</button>
+                            <button class="rating-btn" onclick="setRating(8)">8</button>
+                            <button class="rating-btn" onclick="setRating(9)">9</button>
+                            <button class="rating-btn" onclick="setRating(10)">10</button>
+                        </div>
+                        <div class="rating-text" id="ratingText">ציון: 7 - טוב</div>
+                    </div>
+                    
                     <div class="controls">
                         <button onclick="saveAnnotation()" class="btn btn-success">💾 שמור</button>
                         <button onclick="clearCanvas()" class="btn btn-danger">🗑️ נקה</button>
@@ -200,23 +279,42 @@
     </div>
     
     <script>
+        // 🚨 החלף את הערכים האלה עם פרטי Supabase שלך!
         const SUPABASE_URL = 'https://kwoiohzrzmwkxkihkogb.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3b2lvaHpyem13a3hraWhrb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4Mzk2MjIsImV4cCI6MjA3MjQxNTYyMn0.FK1zrvXNc-nmoV28Nr4K12MuwC_zAe5QPcZmwDSbCfw';
         
         let supabase = null;
-        if (SUPABASE_URL !== 'https://kwoiohzrzmwkxkihkogb.supabase.co') {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let isSupabaseConnected = false;
+        
+        // בדיקת חיבור ל-Supabase
+        if (SUPABASE_URL !== 'https://kwoiohzrzmwkxkihkogb.supabase.co' && SUPABASE_ANON_KEY !== 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3b2lvaHpyem13a3hraWhrb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4Mzk2MjIsImV4cCI6MjA3MjQxNTYyMn0.FK1zrvXNc-nmoV28Nr4K12MuwC_zAe5QPcZmwDSbCfw') {
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                isSupabaseConnected = true;
+                updateStatus('✅ מחובר למסד נתונים משותף', 'connected');
+            } catch (error) {
+                console.error('Supabase connection failed:', error);
+                updateStatus('⚠️ בעיה בחיבור למסד נתונים - עובד במצב לוקלי', 'offline');
+            }
+        } else {
+            updateStatus('⚠️ מסד נתונים לא מוגדר - עובד במצב לוקלי', 'offline');
         }
         
         let currentUser = '';
         let currentImage = null;
         let selectedCategory = null;
+        let selectedRating = 7;
         let isDrawing = false;
         let annotations = [];
         let startX, startY;
         
         const categories = ['avocado', 'mango', 'cucumber', 'apple', 'tomato', 'chicken_breast'];
         const categoryNames = ['אבוקדו', 'מנגו', 'מלפפון', 'תפוח', 'עגבניה', 'חזה עוף'];
+        const ratingTexts = {
+            0: 'גרוע מאוד', 1: 'גרוע', 2: 'גרוע', 3: 'גרוע',
+            4: 'בינוני', 5: 'בינוני', 6: 'בינוני',
+            7: 'טוב', 8: 'טוב', 9: 'מעולה', 10: 'מעולה'
+        };
         
         const canvas = document.getElementById('imageCanvas');
         const ctx = canvas.getContext('2d');
@@ -224,6 +322,24 @@
         document.addEventListener('DOMContentLoaded', function() {
             initApp();
         });
+        
+        function updateStatus(message, type) {
+            const statusBar = document.getElementById('statusBar');
+            const statusText = document.getElementById('statusText');
+            statusText.textContent = message;
+            statusBar.className = 'status-bar ' + type;
+        }
+        
+        function setRating(rating) {
+            selectedRating = rating;
+            
+            // עדכן כפתורים
+            document.querySelectorAll('.rating-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            // עדכן טקסט
+            document.getElementById('ratingText').textContent = `ציון: ${rating} - ${ratingTexts[rating]}`;
+        }
         
         function initApp() {
             const imageInput = document.getElementById('imageInput');
@@ -248,7 +364,6 @@
         function handleTouch(e) {
             e.preventDefault();
             const touch = e.touches[0] || e.changedTouches[0];
-            const rect = canvas.getBoundingClientRect();
             const mouseEvent = {
                 clientX: touch.clientX,
                 clientY: touch.clientY
@@ -422,11 +537,17 @@
         function resetUpload() {
             currentImage = null;
             selectedCategory = null;
+            selectedRating = 7;
             annotations = [];
             document.getElementById('categorySection').classList.add('hidden');
             document.getElementById('canvasSection').classList.add('hidden');
             document.getElementById('imageInput').value = '';
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+            
+            // איפוס דירוג
+            document.querySelectorAll('.rating-btn').forEach(btn => btn.classList.remove('selected'));
+            document.querySelector('.rating-btn[onclick="setRating(7)"]').classList.add('selected');
+            document.getElementById('ratingText').textContent = 'ציון: 7 - טוב';
         }
         
         async function saveAnnotation() {
@@ -438,18 +559,19 @@
             try {
                 showNotification('שומר...', 'success');
                 
-                if (supabase) {
+                if (supabase && isSupabaseConnected) {
                     await saveToSupabase();
                 } else {
                     saveLocally();
                 }
                 
-                showNotification('נשמר בהצלחה! ' + annotations.length + ' אובייקטים', 'success');
+                showNotification(`נשמר בהצלחה! ${annotations.length} אובייקטים, ציון: ${selectedRating}/10`, 'success');
                 resetUpload();
                 
             } catch (error) {
                 console.error('Error:', error);
-                showNotification('שגיאה בשמירה', 'error');
+                showNotification('שגיאה בשמירה במסד נתונים - נשמר מקומית', 'error');
+                saveLocally(); // גיבוי מקומי
             }
         }
         
@@ -458,12 +580,17 @@
                 canvas.toBlob(resolve, 'image/jpeg', 0.8);
             });
             
-            const fileName = Date.now() + '_' + currentUser + '.jpg';
-            const { error: uploadError } = await supabase.storage
+            const fileName = Date.now() + '_' + currentUser + '_' + Math.random().toString(36).substr(2, 6) + '.jpg';
+            
+            console.log('Uploading image:', fileName);
+            const { data: uploadData, error: uploadError } = await supabase.storage
                 .from('images')
                 .upload(fileName, blob);
             
-            if (uploadError) throw uploadError;
+            if (uploadError) {
+                console.error('Upload error:', uploadError);
+                throw uploadError;
+            }
             
             const yoloAnnotations = annotations.map(ann => ({
                 category: ann.category,
@@ -473,17 +600,29 @@
                 height: ann.height / canvas.height
             }));
             
-            const { error } = await supabase
+            console.log('Saving to database:', {
+                user_name: currentUser,
+                image_path: fileName,
+                annotations: yoloAnnotations,
+                quality_rating: selectedRating
+            });
+            
+            const { data, error } = await supabase
                 .from('annotations')
                 .insert([{
                     user_name: currentUser,
                     image_path: fileName,
                     annotations: yoloAnnotations,
-                    quality_rating: 7,
+                    quality_rating: selectedRating,
                     created_at: new Date().toISOString()
                 }]);
             
-            if (error) throw error;
+            if (error) {
+                console.error('Database error:', error);
+                throw error;
+            }
+            
+            console.log('Successfully saved to Supabase:', data);
         }
         
         function saveLocally() {
@@ -501,12 +640,13 @@
                 id: Date.now(),
                 user_name: currentUser,
                 annotations: yoloAnnotations,
-                quality_rating: 7,
+                quality_rating: selectedRating,
                 image_data: canvas.toDataURL('image/jpeg', 0.8),
                 created_at: new Date().toISOString()
             });
             
             localStorage.setItem('yolo_dataset', JSON.stringify(localData));
+            console.log('Saved locally. Total images:', localData.length);
         }
         
         function showNotification(message, type) {
@@ -523,7 +663,7 @@
             setTimeout(() => {
                 notification.classList.remove('show');
                 setTimeout(() => notification.remove(), 300);
-            }, 3000);
+            }, 4000);
         }
     </script>
 </body>
