@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ðŸ¥‘ YOLO Dataset Creator</title>
+    <title>🥑 YOLO Dataset Creator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.38.0/umd/supabase.min.js"></script>
     <style>
         * {
@@ -393,57 +393,57 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>ðŸ¥‘ YOLO Dataset Creator</h1>
-            <p class="subtitle">××•×¡×£ ×ª×ž×•× ×•×ª ×ž×©×•×ª×£ ×œ××™×ž×•×Ÿ ×ž×•×“×œ ×–×™×”×•×™</p>
+            <h1>🥑 YOLO Dataset Creator</h1>
+            <p class="subtitle">אוסף תמונות משותף לאימון מודל זיהוי</p>
         </div>
         
         <!-- Login Section -->
         <div id="loginSection" class="login-section">
-            <h2>ðŸš€ ×‘×•× × ×ª×—×™×œ!</h2>
-            <p>×”×›× ×¡ ××ª ×”×©× ×©×œ×š ×›×“×™ ×œ×”×ª×—×™×œ ×œ×ª×¨×•× ×ª×ž×•× ×•×ª</p>
-            <input type="text" id="userName" class="user-input" placeholder="×”×©× ×©×œ×š" maxlength="20">
+            <h2>🚀 בוא נתחיל!</h2>
+            <p>הכנס את השם שלך כדי להתחיל לתרום תמונות</p>
+            <input type="text" id="userName" class="user-input" placeholder="השם שלך" maxlength="20">
             <br>
-            <button onclick="login()" class="btn btn-primary">×”×ª×—×œ ×œ×ª×¨×•×</button>
+            <button onclick="login()" class="btn btn-primary">התחל לתרום</button>
         </div>
         
         <!-- Main App -->
         <div id="mainApp" class="main-content">
             <!-- User Info -->
             <div class="login-section">
-                <p>×©×œ×•× <strong id="currentUser"></strong>! ðŸ‘‹</p>
-                <button onclick="logout()" class="btn btn-danger">×”×ª× ×ª×§</button>
+                <p>שלום <strong id="currentUser"></strong>! 👋</p>
+                <button onclick="logout()" class="btn btn-danger">התנתק</button>
             </div>
             
             <!-- Tabs -->
             <div class="tabs">
-                <div class="tab active" onclick="switchTab('upload')">ðŸ“· ×”×¢×œ××”</div>
-                <div class="tab" onclick="switchTab('gallery')">ðŸ–¼ï¸?×’×œ×¨×™×”</div>
-                <div class="tab" onclick="switchTab('stats')">ðŸ“Š ×¡×˜×˜×™×¡×˜×™×§×•×ª</div>
-                <div class="tab" onclick="switchTab('export')">ðŸ“¤ ×™×™×¦×•×</div>
+                <div class="tab active" onclick="switchTab('upload')">📷 העלאה</div>
+                <div class="tab" onclick="switchTab('gallery')">🖼️ גלריה</div>
+                <div class="tab" onclick="switchTab('stats')">📊 סטטיסטיקות</div>
+                <div class="tab" onclick="switchTab('export')">📤 ייצוא</div>
             </div>
             
             <!-- Upload Tab -->
             <div id="uploadTab" class="tab-content active">
-                <h3>×”×¢×œ××ª ×ª×ž×•× ×” ×—×“×©×”</h3>
+                <h3>העלאת תמונה חדשה</h3>
                 
                 <!-- Upload Zone -->
                 <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
-                    <h3>ðŸ“· ×¦×œ× ××• ×”×¢×œ×” ×ª×ž×•× ×”</h3>
-                    <p>×œ×—×¥ ×›××Ÿ ××• ×’×¨×•×¨ ×ª×ž×•× ×”</p>
-                    <p style="font-size: 0.9em; opacity: 0.7; margin-top: 10px;">×ª×ž×•× ×•×ª ×™×™×©×ž×¨×• ×‘×ž×¡×“ × ×ª×•× ×™× ×ž×©×•×ª×£</p>
+                    <h3>📷 צלם או העלה תמונה</h3>
+                    <p>לחץ כאן או גרור תמונה</p>
+                    <p style="font-size: 0.9em; opacity: 0.7; margin-top: 10px;">תמונות יישמרו במסד נתונים משותף</p>
                     <input type="file" id="imageInput" accept="image/*" capture="environment" style="display:none">
                 </div>
                 
                 <!-- Category Selection -->
                 <div id="categorySection" class="hidden">
-                    <h3>×‘×—×¨ ××ª ×¡×•×’ ×”×ž×•×¦×¨:</h3>
+                    <h3>בחר את סוג המוצר:</h3>
                     <div class="categories">
-                        <button class="category-btn" data-category="0">ðŸ¥‘ ××‘×•×§×“×•</button>
-                        <button class="category-btn" data-category="1">ðŸ¥­ ×ž× ×’×•</button>
-                        <button class="category-btn" data-category="2">ðŸ¥’ ×ž×œ×¤×¤×•×Ÿ</button>
-                        <button class="category-btn" data-category="3">ðŸŽ ×ª×¤×•×—</button>
-                        <button class="category-btn" data-category="4">ðŸ… ×¢×’×‘× ×™×”</button>
-                        <button class="category-btn" data-category="5">ðŸ— ×—×–×” ×¢×•×£</button>
+                        <button class="category-btn" data-category="0">🥑 אבוקדו</button>
+                        <button class="category-btn" data-category="1">🥭 מנגו</button>
+                        <button class="category-btn" data-category="2">🥒 מלפפון</button>
+                        <button class="category-btn" data-category="3">🍎 תפוח</button>
+                        <button class="category-btn" data-category="4">🍅 עגבניה</button>
+                        <button class="category-btn" data-category="5">🍗 חזה עוף</button>
                     </div>
                 </div>
                 
@@ -453,55 +453,55 @@
                         <canvas id="imageCanvas"></canvas>
                     </div>
                     
-                    <p><strong>×”×•×¨××•×ª:</strong> ×‘×—×¨ ×§×˜×’×•×¨×™×” ×•××– ×œ×—×¥ ×•×’×¨×•×¨ ×¢×œ ×”×ª×ž×•× ×” ×œ×™×¦×™×¨×ª ×¨×™×‘×•×¢ ×¡×‘×™×‘ ×”×ž×•×¦×¨</p>
+                    <p><strong>הוראות:</strong> בחר קטגוריה ואז לחץ וגרור על התמונה ליצירת ריבוע סביב המוצר</p>
                     
                     <!-- Quality Rating -->
                     <div class="quality-section">
-                        <h4>â­?×“×¨×’ ××ª ××™×›×•×ª ×”×ž×•×¦×¨ (××•×¤×¦×™×•× ×œ×™):</h4>
+                        <h4>⭐ דרג את איכות המוצר (אופציונלי):</h4>
                         <div class="quality-rating">
                             <span>0</span>
                             <input type="range" id="qualitySlider" min="0" max="10" value="7" class="quality-slider">
                             <span>10</span>
                         </div>
                         <div class="rating-display">
-                            <span id="ratingValue">7</span>/10 - <span id="ratingText">×˜×•×‘</span>
+                            <span id="ratingValue">7</span>/10 - <span id="ratingText">טוב</span>
                         </div>
                     </div>
                     
                     <div class="controls">
-                        <button onclick="saveAnnotation()" class="btn btn-success">ðŸ’¾ ×©×ž×•×¨</button>
-                        <button onclick="clearCanvas()" class="btn btn-danger">ðŸ—‘ï¸?× ×§×”</button>
-                        <button onclick="resetUpload()" class="btn btn-primary">ðŸ”„ ×ª×ž×•× ×” ×—×“×©×”</button>
+                        <button onclick="saveAnnotation()" class="btn btn-success">💾 שמור</button>
+                        <button onclick="clearCanvas()" class="btn btn-danger">🗑️ נקה</button>
+                        <button onclick="resetUpload()" class="btn btn-primary">🔄 תמונה חדשה</button>
                     </div>
                 </div>
             </div>
             
             <!-- Gallery Tab -->
             <div id="galleryTab" class="tab-content">
-                <h3>×’×œ×¨×™×™×ª ×”×ª×ž×•× ×•×ª ×”×ž×©×•×ª×¤×ª</h3>
-                <button onclick="loadGallery()" class="btn btn-warning">ðŸ”„ ×¨×¢× ×Ÿ</button>
+                <h3>גלריית התמונות המשותפת</h3>
+                <button onclick="loadGallery()" class="btn btn-warning">🔄 רענן</button>
                 <div id="imageGallery" class="image-grid">
-                    <div class="loading">×˜×•×¢×Ÿ ×ª×ž×•× ×•×ª...</div>
+                    <div class="loading">טוען תמונות...</div>
                 </div>
             </div>
             
             <!-- Stats Tab -->
             <div id="statsTab" class="tab-content">
-                <h3>×¡×˜×˜×™×¡×˜×™×§×•×ª ×”×¤×¨×•×™×§×˜</h3>
-                <button onclick="loadStats()" class="btn btn-warning">ðŸ”„ ×¨×¢× ×Ÿ</button>
+                <h3>סטטיסטיקות הפרויקט</h3>
+                <button onclick="loadStats()" class="btn btn-warning">🔄 רענן</button>
                 <div id="statsContainer" class="stats-grid">
-                    <div class="loading">×˜×•×¢×Ÿ × ×ª×•× ×™×...</div>
+                    <div class="loading">טוען נתונים...</div>
                 </div>
             </div>
             
             <!-- Export Tab -->
             <div id="exportTab" class="tab-content">
                 <div class="export-section">
-                    <h3>ðŸ“¤ ×™×™×¦×•× × ×ª×•× ×™× ×œ××™×ž×•×Ÿ YOLO</h3>
-                    <p>×”×•×¨×“ ××ª ×›×œ ×”× ×ª×•× ×™× ×‘×¤×•×¨×ž×˜ YOLO ×œ××™×ž×•×Ÿ ×”×ž×•×“×œ</p>
-                    <button onclick="exportDataset()" class="btn btn-success">ðŸ“¥ ×”×•×¨×“ Dataset</button>
+                    <h3>📤 ייצוא נתונים לאימון YOLO</h3>
+                    <p>הורד את כל הנתונים בפורמט YOLO לאימון המודל</p>
+                    <button onclick="exportDataset()" class="btn btn-success">📥 הורד Dataset</button>
                     <div id="exportProgress" class="hidden">
-                        <p>×ž×›×™×Ÿ ×§×•×‘×¥... ×× × ×”×ž×ª×Ÿ</p>
+                        <p>מכין קובץ... אנא המתן</p>
                     </div>
                 </div>
             </div>
@@ -509,13 +509,13 @@
     </div>
     
     <script>
-        // ðŸš¨ IMPORTANT: Replace these with your Supabase credentials
-        const SUPABASE_URL = 'https://kwoiohzrzmwkxkihkogb.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3b2lvaHpyem13a3hraWhrb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4Mzk2MjIsImV4cCI6MjA3MjQxNTYyMn0.FK1zrvXNc-nmoV28Nr4K12MuwC_zAe5QPcZmwDSbCfw';
+        // 🚨 IMPORTANT: Replace these with your Supabase credentials
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
         
         // Initialize Supabase - only if credentials are provided
         let supabase = null;
-        if (SUPABASE_URL !== 'https://kwoiohzrzmwkxkihkogb.supabase.co' && SUPABASE_ANON_KEY !== 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3b2lvaHpyem13a3hraWhrb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4Mzk2MjIsImV4cCI6MjA3MjQxNTYyMn0.FK1zrvXNc-nmoV28Nr4K12MuwC_zAe5QPcZmwDSbCfw') {
+        if (SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY_HERE') {
             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         }
         
@@ -528,11 +528,11 @@
         let startX, startY;
         
         const categories = ['avocado', 'mango', 'cucumber', 'apple', 'tomato', 'chicken_breast'];
-        const categoryNames = ['××‘×•×§×“×•', '×ž× ×’×•', '×ž×œ×¤×¤×•×Ÿ', '×ª×¤×•×—', '×¢×’×‘× ×™×”', '×—×–×” ×¢×•×£'];
+        const categoryNames = ['אבוקדו', 'מנגו', 'מלפפון', 'תפוח', 'עגבניה', 'חזה עוף'];
         const ratingTexts = {
-            0: '×’×¨×•×¢ ×ž××•×“', 1: '×’×¨×•×¢', 2: '×’×¨×•×¢', 3: '×’×¨×•×¢',
-            4: '×‘×™× ×•× ×™', 5: '×‘×™× ×•× ×™', 6: '×‘×™× ×•× ×™',
-            7: '×˜×•×‘', 8: '×˜×•×‘', 9: '×ž×¢×•×œ×”', 10: '×ž×¢×•×œ×”'
+            0: 'גרוע מאוד', 1: 'גרוע', 2: 'גרוע', 3: 'גרוע',
+            4: 'בינוני', 5: 'בינוני', 6: 'בינוני',
+            7: 'טוב', 8: 'טוב', 9: 'מעולה', 10: 'מעולה'
         };
         
         const canvas = document.getElementById('imageCanvas');
@@ -546,11 +546,384 @@
             
             // Check if Supabase is configured
             if (!supabase) {
-                showNotification('âš ï¸ ×ž×¡×“ ×”× ×ª×•× ×™× ×œ× ×ž×•×’×“×¨ - ×¢×•×‘×“ ×‘×ž×¦×‘ ×œ×•×§×œ×™ ×‘×œ×‘×“', 'error');
+                showNotification('⚠️ מסד הנתונים לא מוגדר - עובד במצב לוקלי בלבד', 'error');
             }
         });
         
-        function initEventListeners() {
+        function endDrawing(e) {
+            if (!isDrawing) return;
+            
+            isDrawing = false;
+            const rect = canvas.getBoundingClientRect();
+            const endX = e.clientX - rect.left;
+            const endY = e.clientY - rect.top;
+            
+            const x = Math.min(startX, endX);
+            const y = Math.min(startY, endY);
+            const width = Math.abs(endX - startX);
+            const height = Math.abs(endY - startY);
+            
+            if (width > 20 && height > 20) {
+                annotations.push({
+                    x, y, width, height,
+                    category: selectedCategory
+                });
+                drawImage();
+            }
+        }
+        
+        function clearCanvas() {
+            annotations = [];
+            drawImage();
+        }
+        
+        function resetUpload() {
+            currentImage = null;
+            selectedCategory = null;
+            annotations = [];
+            document.getElementById('categorySection').classList.add('hidden');
+            document.getElementById('canvasSection').classList.add('hidden');
+            document.getElementById('imageInput').value = '';
+            document.getElementById('qualitySlider').value = 7;
+            document.getElementById('ratingValue').textContent = '7';
+            document.getElementById('ratingText').textContent = 'טוב';
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+        }
+        
+        async function saveAnnotation() {
+            if (!currentImage || annotations.length === 0) {
+                showNotification('אין אנוטציות לשמור', 'error');
+                return;
+            }
+            
+            try {
+                showNotification('שומר...', 'success');
+                const qualityRating = parseInt(document.getElementById('qualitySlider').value);
+                
+                if (supabase) {
+                    // Save to Supabase
+                    await saveToSupabase(qualityRating);
+                } else {
+                    // Save locally
+                    saveLocally(qualityRating);
+                }
+                
+                showNotification(`נשמר בהצלחה! ${annotations.length} אובייקטים, ציון: ${qualityRating}/10`, 'success');
+                resetUpload();
+                loadStats();
+                loadGallery();
+                
+            } catch (error) {
+                console.error('Error saving annotation:', error);
+                showNotification('שגיאה בשמירה', 'error');
+            }
+        }
+        
+        async function saveToSupabase(qualityRating) {
+            // Convert canvas to blob
+            const blob = await new Promise(resolve => {
+                canvas.toBlob(resolve, 'image/jpeg', 0.8);
+            });
+            
+            // Upload image to Supabase Storage
+            const fileName = `${Date.now()}_${currentUser}_${Math.random().toString(36).substr(2, 9)}.jpg`;
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('images')
+                .upload(fileName, blob);
+            
+            if (uploadError) {
+                throw new Error('Upload failed: ' + uploadError.message);
+            }
+            
+            // Convert annotations to YOLO format
+            const yoloAnnotations = annotations.map(ann => {
+                const centerX = (ann.x + ann.width / 2) / canvas.width;
+                const centerY = (ann.y + ann.height / 2) / canvas.height;
+                const width = ann.width / canvas.width;
+                const height = ann.height / canvas.height;
+                return {
+                    category: ann.category,
+                    center_x: centerX,
+                    center_y: centerY,
+                    width: width,
+                    height: height
+                };
+            });
+            
+            // Save to database
+            const { data, error } = await supabase
+                .from('annotations')
+                .insert([{
+                    user_name: currentUser,
+                    image_path: fileName,
+                    annotations: yoloAnnotations,
+                    quality_rating: qualityRating,
+                    created_at: new Date().toISOString()
+                }]);
+            
+            if (error) {
+                throw new Error('Database save failed: ' + error.message);
+            }
+        }
+        
+        function saveLocally(qualityRating) {
+            const localData = JSON.parse(localStorage.getItem('yolo_dataset') || '[]');
+            
+            const yoloAnnotations = annotations.map(ann => {
+                const centerX = (ann.x + ann.width / 2) / canvas.width;
+                const centerY = (ann.y + ann.height / 2) / canvas.height;
+                const width = ann.width / canvas.width;
+                const height = ann.height / canvas.height;
+                return {
+                    category: ann.category,
+                    center_x: centerX,
+                    center_y: centerY,
+                    width: width,
+                    height: height
+                };
+            });
+            
+            localData.push({
+                id: Date.now(),
+                user_name: currentUser,
+                annotations: yoloAnnotations,
+                quality_rating: qualityRating,
+                image_data: canvas.toDataURL('image/jpeg', 0.8),
+                created_at: new Date().toISOString()
+            });
+            
+            localStorage.setItem('yolo_dataset', JSON.stringify(localData));
+        }
+        
+        async function loadStats() {
+            const statsContainer = document.getElementById('statsContainer');
+            statsContainer.innerHTML = '<div class="loading">טוען נתונים...</div>';
+            
+            try {
+                let stats;
+                if (supabase) {
+                    stats = await loadStatsFromSupabase();
+                } else {
+                    stats = loadStatsLocally();
+                }
+                
+                statsContainer.innerHTML = [
+                    { title: 'סך תמונות', value: stats.totalImages, icon: '📷' },
+                    { title: 'סך אובייקטים', value: stats.totalObjects, icon: '🏷️' },
+                    { title: 'מתייגים פעילים', value: stats.uniqueUsers, icon: '👥' },
+                    { title: 'ציון איכות ממוצע', value: stats.avgQuality, icon: '⭐' }
+                ].map(stat => `
+                    <div class="stat-card">
+                        <div style="font-size: 2em; margin-bottom: 10px;">${stat.icon}</div>
+                        <div class="stat-number">${stat.value}</div>
+                        <div>${stat.title}</div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Stats loading error:', error);
+                statsContainer.innerHTML = '<div class="loading">שגיאה בטעינת הנתונים</div>';
+            }
+        }
+        
+        async function loadStatsFromSupabase() {
+            const { data, error } = await supabase
+                .from('annotations')
+                .select('user_name, annotations, quality_rating');
+            
+            if (error) throw error;
+            
+            const totalImages = data.length;
+            const totalObjects = data.reduce((sum, item) => sum + item.annotations.length, 0);
+            const uniqueUsers = new Set(data.map(item => item.user_name)).size;
+            const avgQuality = data.length > 0 
+                ? (data.reduce((sum, item) => sum + item.quality_rating, 0) / data.length).toFixed(1)
+                : '0.0';
+            
+            return { totalImages, totalObjects, uniqueUsers, avgQuality };
+        }
+        
+        function loadStatsLocally() {
+            const localData = JSON.parse(localStorage.getItem('yolo_dataset') || '[]');
+            const totalImages = localData.length;
+            const totalObjects = localData.reduce((sum, item) => sum + item.annotations.length, 0);
+            const uniqueUsers = new Set(localData.map(item => item.user_name)).size;
+            const avgQuality = localData.length > 0
+                ? (localData.reduce((sum, item) => sum + item.quality_rating, 0) / localData.length).toFixed(1)
+                : '0.0';
+            
+            return { totalImages, totalObjects, uniqueUsers, avgQuality };
+        }
+        
+        async function loadGallery() {
+            const gallery = document.getElementById('imageGallery');
+            gallery.innerHTML = '<div class="loading">טוען תמונות...</div>';
+            
+            try {
+                let images;
+                if (supabase) {
+                    images = await loadGalleryFromSupabase();
+                } else {
+                    images = loadGalleryLocally();
+                }
+                
+                if (images.length === 0) {
+                    gallery.innerHTML = '<div class="loading">אין תמונות עדיין. התחל לצלם! 📸</div>';
+                    return;
+                }
+                
+                gallery.innerHTML = images.map(img => `
+                    <div class="image-card" onclick="viewImage('${img.id}')">
+                        <img src="${img.imageUrl}" alt="תמונה">
+                        <div class="image-card-info">
+                            <div><strong>${img.userName}</strong></div>
+                            <div>${img.objectCount} אובייקטים</div>
+                            <div>⭐ ${img.quality}/10</div>
+                            <div style="font-size: 0.8em; opacity: 0.7;">${img.date}</div>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Gallery loading error:', error);
+                gallery.innerHTML = '<div class="loading">שגיאה בטעינת התמונות</div>';
+            }
+        }
+        
+        async function loadGalleryFromSupabase() {
+            const { data, error } = await supabase
+                .from('annotations')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(50);
+            
+            if (error) throw error;
+            
+            return Promise.all(data.map(async item => {
+                const { data: urlData } = supabase.storage
+                    .from('images')
+                    .getPublicUrl(item.image_path);
+                
+                return {
+                    id: item.id,
+                    userName: item.user_name,
+                    imageUrl: urlData.publicUrl,
+                    objectCount: item.annotations.length,
+                    quality: item.quality_rating,
+                    date: new Date(item.created_at).toLocaleDateString('he-IL')
+                };
+            }));
+        }
+        
+        function loadGalleryLocally() {
+            const localData = JSON.parse(localStorage.getItem('yolo_dataset') || '[]');
+            return localData.slice(-20).reverse().map(item => ({
+                id: item.id,
+                userName: item.user_name,
+                imageUrl: item.image_data,
+                objectCount: item.annotations.length,
+                quality: item.quality_rating,
+                date: new Date(item.created_at).toLocaleDateString('he-IL')
+            }));
+        }
+        
+        function viewImage(imageId) {
+            showNotification('פונקציית הצגה בפיתוח', 'success');
+        }
+        
+        async function exportDataset() {
+            const exportProgress = document.getElementById('exportProgress');
+            exportProgress.classList.remove('hidden');
+            
+            try {
+                let dataset;
+                if (supabase) {
+                    dataset = await exportFromSupabase();
+                } else {
+                    dataset = exportFromLocal();
+                }
+                
+                // Create YOLO format files
+                const zip = {
+                    classes: categories,
+                    data: dataset,
+                    info: {
+                        total_images: dataset.length,
+                        total_objects: dataset.reduce((sum, item) => sum + item.annotations.length, 0),
+                        exported_at: new Date().toISOString(),
+                        format: 'YOLO'
+                    }
+                };
+                
+                const dataStr = JSON.stringify(zip, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = `yolo_dataset_${new Date().toISOString().split('T')[0]}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                showNotification('הנתונים יוצאו בהצלחה!', 'success');
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                showNotification('שגיאה בייצוא הנתונים', 'error');
+            } finally {
+                exportProgress.classList.add('hidden');
+            }
+        }
+        
+        async function exportFromSupabase() {
+            const { data, error } = await supabase
+                .from('annotations')
+                .select('*');
+            
+            if (error) throw error;
+            
+            return data.map(item => ({
+                user_name: item.user_name,
+                image_path: item.image_path,
+                annotations: item.annotations,
+                quality_rating: item.quality_rating,
+                created_at: item.created_at
+            }));
+        }
+        
+        function exportFromLocal() {
+            const localData = JSON.parse(localStorage.getItem('yolo_dataset') || '[]');
+            return localData.map(item => ({
+                user_name: item.user_name,
+                image_data: item.image_data,
+                annotations: item.annotations,
+                quality_rating: item.quality_rating,
+                created_at: item.created_at
+            }));
+        }
+        
+        function showNotification(message, type = 'success') {
+            // Remove existing notifications
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            // Hide notification after 4 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html> initEventListeners() {
             // Image upload
             const imageInput = document.getElementById('imageInput');
             imageInput.addEventListener('change', handleImageUpload);
@@ -633,12 +1006,12 @@
         function login() {
             const userName = document.getElementById('userName').value.trim();
             if (!userName) {
-                showNotification('×× × ×”×›× ×¡ ×©×', 'error');
+                showNotification('אנא הכנס שם', 'error');
                 return;
             }
             
             if (userName.length > 20) {
-                showNotification('×”×©× ××¨×•×š ×ž×“×™ (×ž×§×¡×™×ž×•× 20 ×ª×•×•×™×)', 'error');
+                showNotification('השם ארוך מדי (מקסימום 20 תווים)', 'error');
                 return;
             }
             
@@ -691,7 +1064,7 @@
         
         function loadImageFile(file) {
             if (file.size > 10 * 1024 * 1024) { // 10MB limit
-                showNotification('×§×•×‘×¥ ×’×“×•×œ ×ž×“×™ (×ž×§×¡×™×ž×•× 10MB)', 'error');
+                showNotification('קובץ גדול מדי (מקסימום 10MB)', 'error');
                 return;
             }
             
@@ -762,7 +1135,7 @@
         
         function startDrawing(e) {
             if (selectedCategory === null) {
-                showNotification('×‘×—×¨ ×§×˜×’×•×¨×™×” ×ª×—×™×œ×”', 'error');
+                showNotification('בחר קטגוריה תחילה', 'error');
                 return;
             }
             
@@ -787,377 +1160,4 @@
             ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
         }
         
-        function endDrawing(e) {
-            if (!isDrawing) return;
-            
-            isDrawing = false;
-            const rect = canvas.getBoundingClientRect();
-            const endX = e.clientX - rect.left;
-            const endY = e.clientY - rect.top;
-            
-            const x = Math.min(startX, endX);
-            const y = Math.min(startY, endY);
-            const width = Math.abs(endX - startX);
-            const height = Math.abs(endY - startY);
-            
-            if (width > 20 && height > 20) {
-                annotations.push({
-                    x, y, width, height,
-                    category: selectedCategory
-                });
-                drawImage();
-            }
-        }
-        
-        function clearCanvas() {
-            annotations = [];
-            drawImage();
-        }
-        
-        function resetUpload() {
-            currentImage = null;
-            selectedCategory = null;
-            annotations = [];
-            document.getElementById('categorySection').classList.add('hidden');
-            document.getElementById('canvasSection').classList.add('hidden');
-            document.getElementById('imageInput').value = '';
-            document.getElementById('qualitySlider').value = 7;
-            document.getElementById('ratingValue').textContent = '7';
-            document.getElementById('ratingText').textContent = '×˜×•×‘';
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
-        }
-        
-        async function saveAnnotation() {
-            if (!currentImage || annotations.length === 0) {
-                showNotification('××™×Ÿ ×× ×•×˜×¦×™×•×ª ×œ×©×ž×•×¨', 'error');
-                return;
-            }
-            
-            try {
-                showNotification('×©×•×ž×¨...', 'success');
-                const qualityRating = parseInt(document.getElementById('qualitySlider').value);
-                
-                if (supabase) {
-                    // Save to Supabase
-                    await saveToSupabase(qualityRating);
-                } else {
-                    // Save locally
-                    saveLocally(qualityRating);
-                }
-                
-                showNotification(`× ×©×ž×¨ ×‘×”×¦×œ×—×”! ${annotations.length} ××•×‘×™×™×§×˜×™×, ×¦×™×•×Ÿ: ${qualityRating}/10`, 'success');
-                resetUpload();
-                loadStats();
-                loadGallery();
-                
-            } catch (error) {
-                console.error('Error saving annotation:', error);
-                showNotification('×©×’×™××” ×‘×©×ž×™×¨×”', 'error');
-            }
-        }
-        
-        async function saveToSupabase(qualityRating) {
-            // Convert canvas to blob
-            const blob = await new Promise(resolve => {
-                canvas.toBlob(resolve, 'image/jpeg', 0.8);
-            });
-            
-            // Upload image to Supabase Storage
-            const fileName = `${Date.now()}_${currentUser}_${Math.random().toString(36).substr(2, 9)}.jpg`;
-            const { data: uploadData, error: uploadError } = await supabase.storage
-                .from('images')
-                .upload(fileName, blob);
-            
-            if (uploadError) {
-                throw new Error('Upload failed: ' + uploadError.message);
-            }
-            
-            // Convert annotations to YOLO format
-            const yoloAnnotations = annotations.map(ann => {
-                const centerX = (ann.x + ann.width / 2) / canvas.width;
-                const centerY = (ann.y + ann.height / 2) / canvas.height;
-                const width = ann.width / canvas.width;
-                const height = ann.height / canvas.height;
-                return {
-                    category: ann.category,
-                    center_x: centerX,
-                    center_y: centerY,
-                    width: width,
-                    height: height
-                };
-            });
-            
-            // Save to database
-            const { data, error } = await supabase
-                .from('annotations')
-                .insert([{
-                    user_name: currentUser,
-                    image_path: fileName,
-                    annotations: yoloAnnotations,
-                    quality_rating: qualityRating,
-                    created_at: new Date().toISOString()
-                }]);
-            
-            if (error) {
-                throw new Error('Database save failed: ' + error.message);
-            }
-        }
-        
-        function saveLocally(qualityRating) {
-            const localData = JSON.parse(localStorage.getItem('yolo_dataset') || '[]');
-            
-            const yoloAnnotations = annotations.map(ann => {
-                const centerX = (ann.x + ann.width / 2) / canvas.width;
-                const centerY = (ann.y + ann.height / 2) / canvas.height;
-                const width = ann.width / canvas.width;
-                const height = ann.height / canvas.height;
-                return {
-                    category: ann.category,
-                    center_x: centerX,
-                    center_y: centerY,
-                    width: width,
-                    height: height
-                };
-            });
-            
-            localData.push({
-                id: Date.now(),
-                user_name: currentUser,
-                annotations: yoloAnnotations,
-                quality_rating: qualityRating,
-                image_data: canvas.toDataURL('image/jpeg', 0.8),
-                created_at: new Date().toISOString()
-            });
-            
-            localStorage.setItem('yolo_dataset', JSON.stringify(localData));
-        }
-        
-        async function loadStats() {
-            const statsContainer = document.getElementById('statsContainer');
-            statsContainer.innerHTML = '<div class="loading">×˜×•×¢×Ÿ × ×ª×•× ×™×...</div>';
-            
-            try {
-                let stats;
-                if (supabase) {
-                    stats = await loadStatsFromSupabase();
-                } else {
-                    stats = loadStatsLocally();
-                }
-                
-                statsContainer.innerHTML = [
-                    { title: '×¡×š ×ª×ž×•× ×•×ª', value: stats.totalImages, icon: 'ðŸ“·' },
-                    { title: '×¡×š ××•×‘×™×™×§×˜×™×', value: stats.totalObjects, icon: 'ðŸ·ï¸? },
-                    { title: '×ž×ª×™×™×’×™× ×¤×¢×™×œ×™×', value: stats.uniqueUsers, icon: 'ðŸ‘¥' },
-                    { title: '×¦×™×•×Ÿ ××™×›×•×ª ×ž×ž×•×¦×¢', value: stats.avgQuality, icon: 'â­? }
-                ].map(stat => `
-                    <div class="stat-card">
-                        <div style="font-size: 2em; margin-bottom: 10px;">${stat.icon}</div>
-                        <div class="stat-number">${stat.value}</div>
-                        <div>${stat.title}</div>
-                    </div>
-                `).join('');
-                
-            } catch (error) {
-                console.error('Stats loading error:', error);
-                statsContainer.innerHTML = '<div class="loading">×©×’×™××” ×‘×˜×¢×™× ×ª ×”× ×ª×•× ×™×</div>';
-            }
-        }
-        
-        async function loadStatsFromSupabase() {
-            const { data, error } = await supabase
-                .from('annotations')
-                .select('user_name, annotations, quality_rating');
-            
-            if (error) throw error;
-            
-            const totalImages = data.length;
-            const totalObjects = data.reduce((sum, item) => sum + item.annotations.length, 0);
-            const uniqueUsers = new Set(data.map(item => item.user_name)).size;
-            const avgQuality = data.length > 0 
-                ? (data.reduce((sum, item) => sum + item.quality_rating, 0) / data.length).toFixed(1)
-                : '0.0';
-            
-            return { totalImages, totalObjects, uniqueUsers, avgQuality };
-        }
-        
-        function loadStatsLocally() {
-            const localData = JSON.parse(localStorage.getItem('yolo_dataset') || '[]');
-            const totalImages = localData.length;
-            const totalObjects = localData.reduce((sum, item) => sum + item.annotations.length, 0);
-            const uniqueUsers = new Set(localData.map(item => item.user_name)).size;
-            const avgQuality = localData.length > 0
-                ? (localData.reduce((sum, item) => sum + item.quality_rating, 0) / localData.length).toFixed(1)
-                : '0.0';
-            
-            return { totalImages, totalObjects, uniqueUsers, avgQuality };
-        }
-        
-        async function loadGallery() {
-            const gallery = document.getElementById('imageGallery');
-            gallery.innerHTML = '<div class="loading">×˜×•×¢×Ÿ ×ª×ž×•× ×•×ª...</div>';
-            
-            try {
-                let images;
-                if (supabase) {
-                    images = await loadGalleryFromSupabase();
-                } else {
-                    images = loadGalleryLocally();
-                }
-                
-                if (images.length === 0) {
-                    gallery.innerHTML = '<div class="loading">××™×Ÿ ×ª×ž×•× ×•×ª ×¢×“×™×™×Ÿ. ×”×ª×—×œ ×œ×¦×œ×! ðŸ“¸</div>';
-                    return;
-                }
-                
-                gallery.innerHTML = images.map(img => `
-                    <div class="image-card" onclick="viewImage('${img.id}')">
-                        <img src="${img.imageUrl}" alt="×ª×ž×•× ×”">
-                        <div class="image-card-info">
-                            <div><strong>${img.userName}</strong></div>
-                            <div>${img.objectCount} ××•×‘×™×™×§×˜×™×</div>
-                            <div>â­?${img.quality}/10</div>
-                            <div style="font-size: 0.8em; opacity: 0.7;">${img.date}</div>
-                        </div>
-                    </div>
-                `).join('');
-                
-            } catch (error) {
-                console.error('Gallery loading error:', error);
-                gallery.innerHTML = '<div class="loading">×©×’×™××” ×‘×˜×¢×™× ×ª ×”×ª×ž×•× ×•×ª</div>';
-            }
-        }
-        
-        async function loadGalleryFromSupabase() {
-            const { data, error } = await supabase
-                .from('annotations')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(50);
-            
-            if (error) throw error;
-            
-            return Promise.all(data.map(async item => {
-                const { data: urlData } = supabase.storage
-                    .from('images')
-                    .getPublicUrl(item.image_path);
-                
-                return {
-                    id: item.id,
-                    userName: item.user_name,
-                    imageUrl: urlData.publicUrl,
-                    objectCount: item.annotations.length,
-                    quality: item.quality_rating,
-                    date: new Date(item.created_at).toLocaleDateString('he-IL')
-                };
-            }));
-        }
-        
-        function loadGalleryLocally() {
-            const localData = JSON.parse(localStorage.getItem('yolo_dataset') || '[]');
-            return localData.slice(-20).reverse().map(item => ({
-                id: item.id,
-                userName: item.user_name,
-                imageUrl: item.image_data,
-                objectCount: item.annotations.length,
-                quality: item.quality_rating,
-                date: new Date(item.created_at).toLocaleDateString('he-IL')
-            }));
-        }
-        
-        function viewImage(imageId) {
-            showNotification('×¤×•× ×§×¦×™×™×ª ×”×¦×’×” ×‘×¤×™×ª×•×—', 'success');
-        }
-        
-        async function exportDataset() {
-            const exportProgress = document.getElementById('exportProgress');
-            exportProgress.classList.remove('hidden');
-            
-            try {
-                let dataset;
-                if (supabase) {
-                    dataset = await exportFromSupabase();
-                } else {
-                    dataset = exportFromLocal();
-                }
-                
-                // Create YOLO format files
-                const zip = {
-                    classes: categories,
-                    data: dataset,
-                    info: {
-                        total_images: dataset.length,
-                        total_objects: dataset.reduce((sum, item) => sum + item.annotations.length, 0),
-                        exported_at: new Date().toISOString(),
-                        format: 'YOLO'
-                    }
-                };
-                
-                const dataStr = JSON.stringify(zip, null, 2);
-                const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-                
-                const exportFileDefaultName = `yolo_dataset_${new Date().toISOString().split('T')[0]}.json`;
-                
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
-                linkElement.click();
-                
-                showNotification('×”× ×ª×•× ×™× ×™×•×¦××• ×‘×”×¦×œ×—×”!', 'success');
-                
-            } catch (error) {
-                console.error('Export error:', error);
-                showNotification('×©×’×™××” ×‘×™×™×¦×•× ×”× ×ª×•× ×™×', 'error');
-            } finally {
-                exportProgress.classList.add('hidden');
-            }
-        }
-        
-        async function exportFromSupabase() {
-            const { data, error } = await supabase
-                .from('annotations')
-                .select('*');
-            
-            if (error) throw error;
-            
-            return data.map(item => ({
-                user_name: item.user_name,
-                image_path: item.image_path,
-                annotations: item.annotations,
-                quality_rating: item.quality_rating,
-                created_at: item.created_at
-            }));
-        }
-        
-        function exportFromLocal() {
-            const localData = JSON.parse(localStorage.getItem('yolo_dataset') || '[]');
-            return localData.map(item => ({
-                user_name: item.user_name,
-                image_data: item.image_data,
-                annotations: item.annotations,
-                quality_rating: item.quality_rating,
-                created_at: item.created_at
-            }));
-        }
-        
-        function showNotification(message, type = 'success') {
-            // Remove existing notifications
-            const existing = document.querySelector('.notification');
-            if (existing) existing.remove();
-            
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            // Show notification
-            setTimeout(() => notification.classList.add('show'), 100);
-            
-            // Hide notification after 4 seconds
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 300);
-            }, 4000);
-        }
-    </script>
-</body>
-</html>
+        function
