@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🥑 YOLO Dataset Creator</title>
+    <title>ðŸ¥‘ YOLO Dataset Creator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.38.0/umd/supabase.min.js"></script>
     <style>
         * {
@@ -393,57 +393,57 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🥑 YOLO Dataset Creator</h1>
-            <p class="subtitle">אוסף תמונות משותף לאימון מודל זיהוי</p>
+            <h1>ðŸ¥‘ YOLO Dataset Creator</h1>
+            <p class="subtitle">××•×¡×£ ×ª×ž×•× ×•×ª ×ž×©×•×ª×£ ×œ××™×ž×•×Ÿ ×ž×•×“×œ ×–×™×”×•×™</p>
         </div>
         
         <!-- Login Section -->
         <div id="loginSection" class="login-section">
-            <h2>🚀 בוא נתחיל!</h2>
-            <p>הכנס את השם שלך כדי להתחיל לתרום תמונות</p>
-            <input type="text" id="userName" class="user-input" placeholder="השם שלך" maxlength="20">
+            <h2>ðŸš€ ×‘×•× × ×ª×—×™×œ!</h2>
+            <p>×”×›× ×¡ ××ª ×”×©× ×©×œ×š ×›×“×™ ×œ×”×ª×—×™×œ ×œ×ª×¨×•× ×ª×ž×•× ×•×ª</p>
+            <input type="text" id="userName" class="user-input" placeholder="×”×©× ×©×œ×š" maxlength="20">
             <br>
-            <button onclick="login()" class="btn btn-primary">התחל לתרום</button>
+            <button onclick="login()" class="btn btn-primary">×”×ª×—×œ ×œ×ª×¨×•×</button>
         </div>
         
         <!-- Main App -->
         <div id="mainApp" class="main-content">
             <!-- User Info -->
             <div class="login-section">
-                <p>שלום <strong id="currentUser"></strong>! 👋</p>
-                <button onclick="logout()" class="btn btn-danger">התנתק</button>
+                <p>×©×œ×•× <strong id="currentUser"></strong>! ðŸ‘‹</p>
+                <button onclick="logout()" class="btn btn-danger">×”×ª× ×ª×§</button>
             </div>
             
             <!-- Tabs -->
             <div class="tabs">
-                <div class="tab active" onclick="switchTab('upload')">📷 העלאה</div>
-                <div class="tab" onclick="switchTab('gallery')">🖼�?גלריה</div>
-                <div class="tab" onclick="switchTab('stats')">📊 סטטיסטיקות</div>
-                <div class="tab" onclick="switchTab('export')">📤 ייצוא</div>
+                <div class="tab active" onclick="switchTab('upload')">ðŸ“· ×”×¢×œ××”</div>
+                <div class="tab" onclick="switchTab('gallery')">ðŸ–¼ï¸?×’×œ×¨×™×”</div>
+                <div class="tab" onclick="switchTab('stats')">ðŸ“Š ×¡×˜×˜×™×¡×˜×™×§×•×ª</div>
+                <div class="tab" onclick="switchTab('export')">ðŸ“¤ ×™×™×¦×•×</div>
             </div>
             
             <!-- Upload Tab -->
             <div id="uploadTab" class="tab-content active">
-                <h3>העלאת תמונה חדשה</h3>
+                <h3>×”×¢×œ××ª ×ª×ž×•× ×” ×—×“×©×”</h3>
                 
                 <!-- Upload Zone -->
                 <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
-                    <h3>📷 צלם או העלה תמונה</h3>
-                    <p>לחץ כאן או גרור תמונה</p>
-                    <p style="font-size: 0.9em; opacity: 0.7; margin-top: 10px;">תמונות יישמרו במסד נתונים משותף</p>
+                    <h3>ðŸ“· ×¦×œ× ××• ×”×¢×œ×” ×ª×ž×•× ×”</h3>
+                    <p>×œ×—×¥ ×›××Ÿ ××• ×’×¨×•×¨ ×ª×ž×•× ×”</p>
+                    <p style="font-size: 0.9em; opacity: 0.7; margin-top: 10px;">×ª×ž×•× ×•×ª ×™×™×©×ž×¨×• ×‘×ž×¡×“ × ×ª×•× ×™× ×ž×©×•×ª×£</p>
                     <input type="file" id="imageInput" accept="image/*" capture="environment" style="display:none">
                 </div>
                 
                 <!-- Category Selection -->
                 <div id="categorySection" class="hidden">
-                    <h3>בחר את סוג המוצר:</h3>
+                    <h3>×‘×—×¨ ××ª ×¡×•×’ ×”×ž×•×¦×¨:</h3>
                     <div class="categories">
-                        <button class="category-btn" data-category="0">🥑 אבוקדו</button>
-                        <button class="category-btn" data-category="1">🥭 מנגו</button>
-                        <button class="category-btn" data-category="2">🥒 מלפפון</button>
-                        <button class="category-btn" data-category="3">🍎 תפוח</button>
-                        <button class="category-btn" data-category="4">🍅 עגבניה</button>
-                        <button class="category-btn" data-category="5">🍗 חזה עוף</button>
+                        <button class="category-btn" data-category="0">ðŸ¥‘ ××‘×•×§×“×•</button>
+                        <button class="category-btn" data-category="1">ðŸ¥­ ×ž× ×’×•</button>
+                        <button class="category-btn" data-category="2">ðŸ¥’ ×ž×œ×¤×¤×•×Ÿ</button>
+                        <button class="category-btn" data-category="3">ðŸŽ ×ª×¤×•×—</button>
+                        <button class="category-btn" data-category="4">ðŸ… ×¢×’×‘× ×™×”</button>
+                        <button class="category-btn" data-category="5">ðŸ— ×—×–×” ×¢×•×£</button>
                     </div>
                 </div>
                 
@@ -453,55 +453,55 @@
                         <canvas id="imageCanvas"></canvas>
                     </div>
                     
-                    <p><strong>הוראות:</strong> בחר קטגוריה ואז לחץ וגרור על התמונה ליצירת ריבוע סביב המוצר</p>
+                    <p><strong>×”×•×¨××•×ª:</strong> ×‘×—×¨ ×§×˜×’×•×¨×™×” ×•××– ×œ×—×¥ ×•×’×¨×•×¨ ×¢×œ ×”×ª×ž×•× ×” ×œ×™×¦×™×¨×ª ×¨×™×‘×•×¢ ×¡×‘×™×‘ ×”×ž×•×¦×¨</p>
                     
                     <!-- Quality Rating -->
                     <div class="quality-section">
-                        <h4>�?דרג את איכות המוצר (אופציונלי):</h4>
+                        <h4>â­?×“×¨×’ ××ª ××™×›×•×ª ×”×ž×•×¦×¨ (××•×¤×¦×™×•× ×œ×™):</h4>
                         <div class="quality-rating">
                             <span>0</span>
                             <input type="range" id="qualitySlider" min="0" max="10" value="7" class="quality-slider">
                             <span>10</span>
                         </div>
                         <div class="rating-display">
-                            <span id="ratingValue">7</span>/10 - <span id="ratingText">טוב</span>
+                            <span id="ratingValue">7</span>/10 - <span id="ratingText">×˜×•×‘</span>
                         </div>
                     </div>
                     
                     <div class="controls">
-                        <button onclick="saveAnnotation()" class="btn btn-success">💾 שמור</button>
-                        <button onclick="clearCanvas()" class="btn btn-danger">🗑�?נקה</button>
-                        <button onclick="resetUpload()" class="btn btn-primary">🔄 תמונה חדשה</button>
+                        <button onclick="saveAnnotation()" class="btn btn-success">ðŸ’¾ ×©×ž×•×¨</button>
+                        <button onclick="clearCanvas()" class="btn btn-danger">ðŸ—‘ï¸?× ×§×”</button>
+                        <button onclick="resetUpload()" class="btn btn-primary">ðŸ”„ ×ª×ž×•× ×” ×—×“×©×”</button>
                     </div>
                 </div>
             </div>
             
             <!-- Gallery Tab -->
             <div id="galleryTab" class="tab-content">
-                <h3>גלריית התמונות המשותפת</h3>
-                <button onclick="loadGallery()" class="btn btn-warning">🔄 רענן</button>
+                <h3>×’×œ×¨×™×™×ª ×”×ª×ž×•× ×•×ª ×”×ž×©×•×ª×¤×ª</h3>
+                <button onclick="loadGallery()" class="btn btn-warning">ðŸ”„ ×¨×¢× ×Ÿ</button>
                 <div id="imageGallery" class="image-grid">
-                    <div class="loading">טוען תמונות...</div>
+                    <div class="loading">×˜×•×¢×Ÿ ×ª×ž×•× ×•×ª...</div>
                 </div>
             </div>
             
             <!-- Stats Tab -->
             <div id="statsTab" class="tab-content">
-                <h3>סטטיסטיקות הפרויקט</h3>
-                <button onclick="loadStats()" class="btn btn-warning">🔄 רענן</button>
+                <h3>×¡×˜×˜×™×¡×˜×™×§×•×ª ×”×¤×¨×•×™×§×˜</h3>
+                <button onclick="loadStats()" class="btn btn-warning">ðŸ”„ ×¨×¢× ×Ÿ</button>
                 <div id="statsContainer" class="stats-grid">
-                    <div class="loading">טוען נתונים...</div>
+                    <div class="loading">×˜×•×¢×Ÿ × ×ª×•× ×™×...</div>
                 </div>
             </div>
             
             <!-- Export Tab -->
             <div id="exportTab" class="tab-content">
                 <div class="export-section">
-                    <h3>📤 ייצוא נתונים לאימון YOLO</h3>
-                    <p>הורד את כל הנתונים בפורמט YOLO לאימון המודל</p>
-                    <button onclick="exportDataset()" class="btn btn-success">📥 הורד Dataset</button>
+                    <h3>ðŸ“¤ ×™×™×¦×•× × ×ª×•× ×™× ×œ××™×ž×•×Ÿ YOLO</h3>
+                    <p>×”×•×¨×“ ××ª ×›×œ ×”× ×ª×•× ×™× ×‘×¤×•×¨×ž×˜ YOLO ×œ××™×ž×•×Ÿ ×”×ž×•×“×œ</p>
+                    <button onclick="exportDataset()" class="btn btn-success">ðŸ“¥ ×”×•×¨×“ Dataset</button>
                     <div id="exportProgress" class="hidden">
-                        <p>מכין קובץ... אנא המתן</p>
+                        <p>×ž×›×™×Ÿ ×§×•×‘×¥... ×× × ×”×ž×ª×Ÿ</p>
                     </div>
                 </div>
             </div>
@@ -509,7 +509,7 @@
     </div>
     
     <script>
-        // 🚨 IMPORTANT: Replace these with your Supabase credentials
+        // ðŸš¨ IMPORTANT: Replace these with your Supabase credentials
         const SUPABASE_URL = 'https://kwoiohzrzmwkxkihkogb.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3b2lvaHpyem13a3hraWhrb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4Mzk2MjIsImV4cCI6MjA3MjQxNTYyMn0.FK1zrvXNc-nmoV28Nr4K12MuwC_zAe5QPcZmwDSbCfw';
         
@@ -528,11 +528,11 @@
         let startX, startY;
         
         const categories = ['avocado', 'mango', 'cucumber', 'apple', 'tomato', 'chicken_breast'];
-        const categoryNames = ['אבוקדו', 'מנגו', 'מלפפון', 'תפוח', 'עגבניה', 'חזה עוף'];
+        const categoryNames = ['××‘×•×§×“×•', '×ž× ×’×•', '×ž×œ×¤×¤×•×Ÿ', '×ª×¤×•×—', '×¢×’×‘× ×™×”', '×—×–×” ×¢×•×£'];
         const ratingTexts = {
-            0: 'גרוע מאוד', 1: 'גרוע', 2: 'גרוע', 3: 'גרוע',
-            4: 'בינוני', 5: 'בינוני', 6: 'בינוני',
-            7: 'טוב', 8: 'טוב', 9: 'מעולה', 10: 'מעולה'
+            0: '×’×¨×•×¢ ×ž××•×“', 1: '×’×¨×•×¢', 2: '×’×¨×•×¢', 3: '×’×¨×•×¢',
+            4: '×‘×™× ×•× ×™', 5: '×‘×™× ×•× ×™', 6: '×‘×™× ×•× ×™',
+            7: '×˜×•×‘', 8: '×˜×•×‘', 9: '×ž×¢×•×œ×”', 10: '×ž×¢×•×œ×”'
         };
         
         const canvas = document.getElementById('imageCanvas');
@@ -546,7 +546,7 @@
             
             // Check if Supabase is configured
             if (!supabase) {
-                showNotification('⚠️ מסד הנתונים לא מוגדר - עובד במצב לוקלי בלבד', 'error');
+                showNotification('âš ï¸ ×ž×¡×“ ×”× ×ª×•× ×™× ×œ× ×ž×•×’×“×¨ - ×¢×•×‘×“ ×‘×ž×¦×‘ ×œ×•×§×œ×™ ×‘×œ×‘×“', 'error');
             }
         });
         
@@ -633,12 +633,12 @@
         function login() {
             const userName = document.getElementById('userName').value.trim();
             if (!userName) {
-                showNotification('אנא הכנס שם', 'error');
+                showNotification('×× × ×”×›× ×¡ ×©×', 'error');
                 return;
             }
             
             if (userName.length > 20) {
-                showNotification('השם ארוך מדי (מקסימום 20 תווים)', 'error');
+                showNotification('×”×©× ××¨×•×š ×ž×“×™ (×ž×§×¡×™×ž×•× 20 ×ª×•×•×™×)', 'error');
                 return;
             }
             
@@ -691,7 +691,7 @@
         
         function loadImageFile(file) {
             if (file.size > 10 * 1024 * 1024) { // 10MB limit
-                showNotification('קובץ גדול מדי (מקסימום 10MB)', 'error');
+                showNotification('×§×•×‘×¥ ×’×“×•×œ ×ž×“×™ (×ž×§×¡×™×ž×•× 10MB)', 'error');
                 return;
             }
             
@@ -762,7 +762,7 @@
         
         function startDrawing(e) {
             if (selectedCategory === null) {
-                showNotification('בחר קטגוריה תחילה', 'error');
+                showNotification('×‘×—×¨ ×§×˜×’×•×¨×™×” ×ª×—×™×œ×”', 'error');
                 return;
             }
             
@@ -823,18 +823,18 @@
             document.getElementById('imageInput').value = '';
             document.getElementById('qualitySlider').value = 7;
             document.getElementById('ratingValue').textContent = '7';
-            document.getElementById('ratingText').textContent = 'טוב';
+            document.getElementById('ratingText').textContent = '×˜×•×‘';
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
         }
         
         async function saveAnnotation() {
             if (!currentImage || annotations.length === 0) {
-                showNotification('אין אנוטציות לשמור', 'error');
+                showNotification('××™×Ÿ ×× ×•×˜×¦×™×•×ª ×œ×©×ž×•×¨', 'error');
                 return;
             }
             
             try {
-                showNotification('שומר...', 'success');
+                showNotification('×©×•×ž×¨...', 'success');
                 const qualityRating = parseInt(document.getElementById('qualitySlider').value);
                 
                 if (supabase) {
@@ -845,14 +845,14 @@
                     saveLocally(qualityRating);
                 }
                 
-                showNotification(`נשמר בהצלחה! ${annotations.length} אובייקטים, ציון: ${qualityRating}/10`, 'success');
+                showNotification(`× ×©×ž×¨ ×‘×”×¦×œ×—×”! ${annotations.length} ××•×‘×™×™×§×˜×™×, ×¦×™×•×Ÿ: ${qualityRating}/10`, 'success');
                 resetUpload();
                 loadStats();
                 loadGallery();
                 
             } catch (error) {
                 console.error('Error saving annotation:', error);
-                showNotification('שגיאה בשמירה', 'error');
+                showNotification('×©×’×™××” ×‘×©×ž×™×¨×”', 'error');
             }
         }
         
@@ -934,7 +934,7 @@
         
         async function loadStats() {
             const statsContainer = document.getElementById('statsContainer');
-            statsContainer.innerHTML = '<div class="loading">טוען נתונים...</div>';
+            statsContainer.innerHTML = '<div class="loading">×˜×•×¢×Ÿ × ×ª×•× ×™×...</div>';
             
             try {
                 let stats;
@@ -945,10 +945,10 @@
                 }
                 
                 statsContainer.innerHTML = [
-                    { title: 'סך תמונות', value: stats.totalImages, icon: '📷' },
-                    { title: 'סך אובייקטים', value: stats.totalObjects, icon: '🏷�? },
-                    { title: 'מתייגים פעילים', value: stats.uniqueUsers, icon: '👥' },
-                    { title: 'ציון איכות ממוצע', value: stats.avgQuality, icon: '�? }
+                    { title: '×¡×š ×ª×ž×•× ×•×ª', value: stats.totalImages, icon: 'ðŸ“·' },
+                    { title: '×¡×š ××•×‘×™×™×§×˜×™×', value: stats.totalObjects, icon: 'ðŸ·ï¸? },
+                    { title: '×ž×ª×™×™×’×™× ×¤×¢×™×œ×™×', value: stats.uniqueUsers, icon: 'ðŸ‘¥' },
+                    { title: '×¦×™×•×Ÿ ××™×›×•×ª ×ž×ž×•×¦×¢', value: stats.avgQuality, icon: 'â­? }
                 ].map(stat => `
                     <div class="stat-card">
                         <div style="font-size: 2em; margin-bottom: 10px;">${stat.icon}</div>
@@ -959,7 +959,7 @@
                 
             } catch (error) {
                 console.error('Stats loading error:', error);
-                statsContainer.innerHTML = '<div class="loading">שגיאה בטעינת הנתונים</div>';
+                statsContainer.innerHTML = '<div class="loading">×©×’×™××” ×‘×˜×¢×™× ×ª ×”× ×ª×•× ×™×</div>';
             }
         }
         
@@ -994,7 +994,7 @@
         
         async function loadGallery() {
             const gallery = document.getElementById('imageGallery');
-            gallery.innerHTML = '<div class="loading">טוען תמונות...</div>';
+            gallery.innerHTML = '<div class="loading">×˜×•×¢×Ÿ ×ª×ž×•× ×•×ª...</div>';
             
             try {
                 let images;
@@ -1005,17 +1005,17 @@
                 }
                 
                 if (images.length === 0) {
-                    gallery.innerHTML = '<div class="loading">אין תמונות עדיין. התחל לצלם! 📸</div>';
+                    gallery.innerHTML = '<div class="loading">××™×Ÿ ×ª×ž×•× ×•×ª ×¢×“×™×™×Ÿ. ×”×ª×—×œ ×œ×¦×œ×! ðŸ“¸</div>';
                     return;
                 }
                 
                 gallery.innerHTML = images.map(img => `
                     <div class="image-card" onclick="viewImage('${img.id}')">
-                        <img src="${img.imageUrl}" alt="תמונה">
+                        <img src="${img.imageUrl}" alt="×ª×ž×•× ×”">
                         <div class="image-card-info">
                             <div><strong>${img.userName}</strong></div>
-                            <div>${img.objectCount} אובייקטים</div>
-                            <div>�?${img.quality}/10</div>
+                            <div>${img.objectCount} ××•×‘×™×™×§×˜×™×</div>
+                            <div>â­?${img.quality}/10</div>
                             <div style="font-size: 0.8em; opacity: 0.7;">${img.date}</div>
                         </div>
                     </div>
@@ -1023,7 +1023,7 @@
                 
             } catch (error) {
                 console.error('Gallery loading error:', error);
-                gallery.innerHTML = '<div class="loading">שגיאה בטעינת התמונות</div>';
+                gallery.innerHTML = '<div class="loading">×©×’×™××” ×‘×˜×¢×™× ×ª ×”×ª×ž×•× ×•×ª</div>';
             }
         }
         
@@ -1065,7 +1065,7 @@
         }
         
         function viewImage(imageId) {
-            showNotification('פונקציית הצגה בפיתוח', 'success');
+            showNotification('×¤×•× ×§×¦×™×™×ª ×”×¦×’×” ×‘×¤×™×ª×•×—', 'success');
         }
         
         async function exportDataset() {
@@ -1102,11 +1102,11 @@
                 linkElement.setAttribute('download', exportFileDefaultName);
                 linkElement.click();
                 
-                showNotification('הנתונים יוצאו בהצלחה!', 'success');
+                showNotification('×”× ×ª×•× ×™× ×™×•×¦××• ×‘×”×¦×œ×—×”!', 'success');
                 
             } catch (error) {
                 console.error('Export error:', error);
-                showNotification('שגיאה בייצוא הנתונים', 'error');
+                showNotification('×©×’×™××” ×‘×™×™×¦×•× ×”× ×ª×•× ×™×', 'error');
             } finally {
                 exportProgress.classList.add('hidden');
             }
