@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥑 YOLO Dataset Creator - Enhanced</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2.38.0/dist/umd/supabase.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        .header {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+        
+        h1 { font-size: 2em; margin-bottom: 10px; }
+        
+        .login-section {
+            background: rgba(255,255,255,0.15);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .user-input {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            margin: 10px;
+            min-width: 200px;
+            text-align: center;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            color: white;
+            margin: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover { transform: translateY(-2px); }
+        
+        .main-content { display: none; }
+        
+        .upload-zone {
+            border: 2px dashed rgba(255,255,255,0.5);
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-zone:hover {
+            border-color: rgba(255,255,255,0.8);
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .category-btn {
+            padding: 15px 10px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .category-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .category-btn.selected {
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            border-color: white;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+        }
+        
+        .canvas-container { text-align: center; margin: 20px 0; }
+        
+        #imageCanvas {
+            border-radius: 15px;
+            max-width: 100%;
+            max-height: 60vh;
+            cursor: crosshair;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .parameters-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .param-group {
+            margin-bottom: 20px;
+        }
+        
+        .param-group-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .param-group-header:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .toggle-icon {
+            font-size: 1.5em;
+            transition: transform 0.3s;
+        }
+        
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .param-group-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .param-group-content.collapsed {
+            max-height: 0;
+        }
+        
+        .param-item {
+            background: rgba(255,255,255,0.08);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .param-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .param-value {
+            color: #ffd700;
+            font-size: 1.1em;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.3);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .btn-success { background: linear-gradient(45deg, #56ab2f, #a8e6cf); }
+        .btn-danger { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
+        .btn-primary { background: linear-gradient(45deg, #667eea, #764ba2); }
+        
+        .hidden { display: none !important; }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            max-width: 300px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .notification.show { transform: translateX(0); }
+        .notification.success { background: linear-gradient(45deg, #56ab2f, #a8e6cf); }
+        .notification.error { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
+        
+        .status-bar {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .status-bar.connected { background: rgba(76, 175, 80, 0.3); }
+        .status-bar.offline { background: rgba(244, 67, 54, 0.3); }
+        
+        .instructions {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🥑 YOLO Dataset Creator - Enhanced</h1>
+            <p>אוסף תמונות משותף לאימון מודל זיהוי עם פרמטרים מתקדמים</p>
+        </div>
+        
+        <div id="statusBar" class="status-bar connected">
+            <span id="statusText">✅ מחובר למסד נתונים משותף</span>
+        </div>
+        
+        <div id="loginSection" class="login-section">
+            <h2>🚀 בוא נתחיל!</h2>
+            <p><strong>הכנס את השם שלך באנגלית בלבד</strong></p>
+            <p style="font-size: 0.9em; color: #ffeb3b; margin: 10px 0;">⚠️ רק אותיות אנגליות! דוגמה: Uri, Dan, Maya, Alex</p>
+            <input type="text" id="userName" class="user-input" placeholder="Your name in English only" maxlength="15">
+            <br>
+            <button onclick="login()" class="btn">התחל לתרום</button>
+        </div>
+        
+        <div id="mainApp" class="main-content">
+            <div class="login-section">
+                <p>שלום <strong id="currentUser"></strong>! 👋</p>
+                <button onclick="logout()" class="btn btn-danger">התנתק</button>
+            </div>
+            
+            <div>
+                <h3>העלאת תמונה חדשה</h3>
+                
+                <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
+                    <h3>📷 צלם או העלה תמונה</h3>
+                    <p>לחץ כאן או גרור תמונה</p>
+                    <input type="file" id="imageInput" accept="image/*" capture="environment" style="display:none">
+                </div>
+                
+                <div id="categorySection" class="hidden">
+                    <h3>בחר את סוג המוצר:</h3>
+                    <div class="categories">
+                        <button class="category-btn" data-category="0" data-product="avocado">🥑 אבוקדו</button>
+                        <button class="category-btn" data-category="1" data-product="mango">🥭 מנגו</button>
+                        <button class="category-btn" data-category="2" data-product="cucumber">🥒 מלפפון</button>
+                        <button class="category-btn" data-category="3" data-product="apple">🍎 תפוח</button>
+                        <button class="category-btn" data-category="4" data-product="tomato">🍅 עגבניה</button>
+                        <button class="category-btn" data-category="5" data-product="chicken">🍗 חזה עוף</button>
+                    </div>
+                </div>
+                
+                <div id="canvasSection" class="hidden">
+                    <div class="canvas-container">
+                        <canvas id="imageCanvas"></canvas>
+                    </div>
+                    
+                    <div class="instructions">
+                        <strong>הוראות:</strong> בחר קטגוריה ואז לחץ וגרור על התמונה ליצירת ריבוע סביב המוצר
+                    </div>
+                    
+                    <div id="parametersSection" class="parameters-section hidden">
+                        <h3 style="text-align: center; margin-bottom: 20px;">⚙️ הגדר פרמטרים למוצר</h3>
+                        
+                        <div class="param-group">
+                            <div class="param-group-header" onclick="toggleGroup('visible')">
+                                <span>👁️ פרמטרים נראים למשתמש</span>
+                                <span class="toggle-icon" id="toggle-visible">▼</span>
+                            </div>
+                            <div class="param-group-content" id="visibleParams"></div>
+                        </div>
+                        
+                        <div class="param-group">
+                            <div class="param-group-header" onclick="toggleGroup('hidden')">
+                                <span>🔒 פרמטרים נסתרים/רצויים</span>
+                                <span class="toggle-icon" id="toggle-hidden">▼</span>
+                            </div>
+                            <div class="param-group-content" id="hiddenParams"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="controls">
+                        <button onclick="saveAnnotation()" class="btn btn-success">💾 שמור</button>
+                        <button onclick="clearCanvas()" class="btn btn-danger">🗑️ נקה</button>
+                        <button onclick="resetUpload()" class="btn btn-primary">🔄 תמונה חדשה</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const SUPABASE_URL = 'https://kwoiohzrzmwkxkihkogb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3b2lvaHpyem13a3hraWhrb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4Mzk2MjIsImV4cCI6MjA3MjQxNTYyMn0.FK1zrvXNc-nmoV28Nr4K12MuwC_zAe5QPcZmwDSbCfw';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Parameters configuration from Excel
+        const PARAMETERS = {
+            "apple": {
+                "visible": {
+                    "color_quality": "איכות צבע",
+                    "shape_integrity": "תקינות צורה",
+                    "surface_defects": "פגמי משטח",
+                    "shine": "ברק קליפה"
+                },
+                "hidden": {
+                    "taste": "טעם",
+                    "crispness": "פריכות/טקסטורה",
+                    "ripeness": "בשלות",
+                    "overall_score": "ציון כללי"
+                }
+            },
+            "tomato": {
+                "visible": {
+                    "color_quality": "איכות צבע",
+                    "shape_integrity": "תקינות צורה",
+                    "surface_defects": "פגמי משטח",
+                    "firmness": "מוצקות"
+                },
+                "hidden": {
+                    "taste": "טעם",
+                    "acidity": "חמיצות",
+                    "ripeness": "בשלות",
+                    "overall_score": "ציון כללי"
+                }
+            },
+            "cucumber": {
+                "visible": {
+                    "color_quality": "איכות צבע",
+                    "straightness": "ישרות",
+                    "surface_defects": "פגמי משטח",
+                    "diameter_uniform": "אחידות קוטר"
+                },
+                "hidden": {
+                    "taste": "טעם",
+                    "crispness": "פריכות/טקסטורה",
+                    "freshness": "רעננות",
+                    "overall_score": "ציון כללי"
+                }
+            },
+            "avocado": {
+                "visible": {
+                    "skin_color": "צבע קליפה",
+                    "softness": "רכות",
+                    "surface_defects": "פגמי משטח",
+                    "size_uniform": "אחידות גודל"
+                },
+                "hidden": {
+                    "taste": "טעם",
+                    "inner_texture": "רכות פנימית",
+                    "ripeness": "בשלות",
+                    "overall_score": "ציון כללי"
+                }
+            },
+            "mango": {
+                "visible": {
+                    "color_stage": "שלב צבע",
+                    "softness": "רכות",
+                    "surface_defects": "פגמי משטח",
+                    "aroma": "ריח"
+                },
+                "hidden": {
+                    "taste": "טעם",
+                    "fiber_content": "סיביות",
+                    "ripeness": "בשלות",
+                    "overall_score": "ציון כללי"
+                }
+            },
+            "chicken": {
+                "visible": {
+                    "color_quality": "איכות צבע",
+                    "texture_visual": "מרקם נראה",
+                    "surface_defects": "פגמי משטח",
+                    "size_uniform": "אחידות גודל"
+                },
+                "hidden": {
+                    "taste": "טעם",
+                    "tenderness": "רכות",
+                    "juiciness": "עסיסיות",
+                    "overall_score": "ציון כללי"
+                }
+            }
+        };
+        
+        let currentUser = '';
+        let currentImage = null;
+        let selectedCategory = null;
+        let selectedProduct = null;
+        let currentParameters = {};
+        let isDrawing = false;
+        let annotations = [];
+        let startX, startY;
+        
+        const categories = ['avocado', 'mango', 'cucumber', 'apple', 'tomato', 'chicken_breast'];
+        const categoryNames = ['אבוקדו', 'מנגו', 'מלפפון', 'תפוח', 'עגבניה', 'חזה עוף'];
+        
+        const canvas = document.getElementById('imageCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+        });
+        
+        function initApp() {
+            const imageInput = document.getElementById('imageInput');
+            imageInput.addEventListener('change', handleImageUpload);
+            
+            const categoryBtns = document.querySelectorAll('.category-btn');
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', () => selectCategory(btn));
+            });
+            
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', drawBoundingBox);
+            canvas.addEventListener('mouseup', endDrawing);
+            
+            canvas.addEventListener('touchstart', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchend', handleTouch);
+            
+            checkExistingUser();
+        }
+        
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0] || e.changedTouches[0];
+            const mouseEvent = {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            };
+            
+            if (e.type === 'touchstart') startDrawing(mouseEvent);
+            if (e.type === 'touchmove') drawBoundingBox(mouseEvent);
+            if (e.type === 'touchend') endDrawing(mouseEvent);
+        }
+        
+        function checkExistingUser() {
+            const savedUser = localStorage.getItem('yolo_user');
+            if (savedUser) {
+                currentUser = savedUser;
+                document.getElementById('currentUser').textContent = currentUser;
+                showMainApp();
+            }
+        }
+        
+        function login() {
+            const userName = document.getElementById('userName').value.trim();
+            
+            if (!userName) {
+                showNotification('❌ אנא הכנס שם', 'error');
+                return;
+            }
+            
+            const englishOnlyRegex = /^[a-zA-Z]+$/;
+            if (!englishOnlyRegex.test(userName)) {
+                showNotification('❌ השם חייב להכיל רק אותיות אנגליות!', 'error');
+                return;
+            }
+            
+            if (userName.length < 2 || userName.length > 15) {
+                showNotification('❌ השם חייב להיות בין 2-15 אותיות', 'error');
+                return;
+            }
+            
+            currentUser = userName;
+            localStorage.setItem('yolo_user', currentUser);
+            document.getElementById('currentUser').textContent = currentUser;
+            showNotification('✅ שם תקין! מתחיל...', 'success');
+            showMainApp();
+        }
+        
+        function logout() {
+            localStorage.removeItem('yolo_user');
+            currentUser = '';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('mainApp').style.display = 'none';
+            resetUpload();
+        }
+        
+        function showMainApp() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+        }
+        
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                loadImageFile(file);
+            }
+        }
+        
+        function loadImageFile(file) {
+            if (file.size > 10 * 1024 * 1024) {
+                showNotification('קובץ גדול מדי (מקסימום 10MB)', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    currentImage = img;
+                    setupCanvas();
+                    drawImage();
+                    document.getElementById('categorySection').classList.remove('hidden');
+                    document.getElementById('canvasSection').classList.remove('hidden');
+                    annotations = [];
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function setupCanvas() {
+            const maxWidth = Math.min(600, window.innerWidth - 40);
+            const maxHeight = 500;
+            
+            let width = currentImage.width;
+            let height = currentImage.height;
+            const aspectRatio = width / height;
+            
+            if (width > maxWidth) {
+                width = maxWidth;
+                height = width / aspectRatio;
+            }
+            
+            if (height > maxHeight) {
+                height = maxHeight;
+                width = height * aspectRatio;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+        }
+        
+        function drawImage() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+            
+            annotations.forEach(ann => {
+                ctx.strokeStyle = '#00ff00';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(ann.x, ann.y, ann.width, ann.height);
+                
+                ctx.fillStyle = '#00ff00';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText(categoryNames[ann.category], ann.x, ann.y - 5);
+            });
+        }
+        
+        function selectCategory(btn) {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedCategory = parseInt(btn.dataset.category);
+            selectedProduct = btn.dataset.product;
+            
+            loadParameters(selectedProduct);
+        }
+        
+        function loadParameters(product) {
+            const params = PARAMETERS[product];
+            if (!params) return;
+            
+            currentParameters = {};
+            
+            document.getElementById('parametersSection').classList.remove('hidden');
+            
+            const visibleContainer = document.getElementById('visibleParams');
+            const hiddenContainer = document.getElementById('hiddenParams');
+            
+            visibleContainer.innerHTML = '';
+            hiddenContainer.innerHTML = '';
+            
+            Object.entries(params.visible).forEach(([id, name]) => {
+                createParameterSlider(visibleContainer, id, name, 'visible');
+            });
+            
+            Object.entries(params.hidden).forEach(([id, name]) => {
+                createParameterSlider(hiddenContainer, id, name, 'hidden');
+            });
+        }
+        
+        function createParameterSlider(container, id, name, type) {
+            const paramItem = document.createElement('div');
+            paramItem.className = 'param-item';
+            
+            const defaultValue = 5;
+            currentParameters[id] = defaultValue;
+            
+            paramItem.innerHTML = `
+                <div class="param-label">
+                    <span>${name}</span>
+                    <span class="param-value" id="value-${id}">${defaultValue.toFixed(1)}</span>
+                </div>
+                <input type="range" class="slider" id="slider-${id}" 
+                       min="0" max="10" step="0.5" value="${defaultValue}">
+            `;
+            
+            container.appendChild(paramItem);
+            
+            const slider = document.getElementById(`slider-${id}`);
+            slider.addEventListener('input', function(e) {
+                const value = parseFloat(e.target.value);
+                currentParameters[id] = value;
+                document.getElementById(`value-${id}`).textContent = value.toFixed(1);
+            });
+        }
+        
+        function toggleGroup(groupName) {
+            const content = document.getElementById(`${groupName}Params`);
+            const icon = document.getElementById(`toggle-${groupName}`);
+            
+            content.classList.toggle('collapsed');
+            icon.classList.toggle('collapsed');
+        }
+        
+        function startDrawing(e) {
+            if (selectedCategory === null) {
+                showNotification('בחר קטגוריה תחילה', 'error');
+                return;
+            }
+            
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            startX = e.clientX - rect.left;
+            startY = e.clientY - rect.top;
+        }
+        
+        function drawBoundingBox(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const currentX = e.clientX - rect.left;
+            const currentY = e.clientY - rect.top;
+            
+            drawImage();
+            
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
+        }
+        
+        function endDrawing(e) {
+            if (!isDrawing) return;
+            
+            isDrawing = false;
+            const rect = canvas.getBoundingClientRect();
+            const endX = e.clientX - rect.left;
+            const endY = e.clientY - rect.top;
+            
+            const x = Math.min(startX, endX);
+            const y = Math.min(startY, endY);
+            const width = Math.abs(endX - startX);
+            const height = Math.abs(endY - startY);
+            
+            if (width > 20 && height > 20) {
+                annotations.push({
+                    x: x, y: y, width: width, height: height,
+                    category: selectedCategory,
+                    product: selectedProduct,
+                    parameters: {...currentParameters}
+                });
+                drawImage();
+            }
+        }
+        
+        function clearCanvas() {
+            annotations = [];
+            drawImage();
+        }
+        
+        function resetUpload() {
+            currentImage = null;
+            selectedCategory = null;
+            selectedProduct = null;
+            currentParameters = {};
+            annotations = [];
+            document.getElementById('categorySection').classList.add('hidden');
+            document.getElementById('canvasSection').classList.add('hidden');
+            document.getElementById('parametersSection').classList.add('hidden');
+            document.getElementById('imageInput').value = '';
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+        }
+        
+        async function saveAnnotation() {
+            if (!currentImage || annotations.length === 0) {
+                showNotification('אין אנוטציות לשמור', 'error');
+                return;
+            }
+            
+            try {
+                showNotification('שומר...', 'success');
+                
+                const blob = await new Promise(resolve => {
+                    canvas.toBlob(resolve, 'image/jpeg', 0.8);
+                });
+                
+                const fileName = `${Date.now()}_${currentUser.toLowerCase()}.jpg`;
+                
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('images')
+                    .upload(fileName, blob);
+                
+                if (uploadError) {
+                    throw new Error(`Upload failed: ${uploadError.message}`);
+                }
+                
+                const yoloAnnotations = annotations.map(ann => ({
+                    category: ann.category,
+                    product: ann.product,
+                    center_x: (ann.x + ann.width / 2) / canvas.width,
+                    center_y: (ann.y + ann.height / 2) / canvas.height,
+                    width: ann.width / canvas.width,
+                    height: ann.height / canvas.height,
+                    parameters: ann.parameters
+                }));
+                
+                const { data, error } = await supabase
+                    .from('annotations')
+                    .insert([{
+                        user_name: currentUser,
+                        image_path: fileName,
+                        annotations: yoloAnnotations,
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                if (error) {
+                    throw new Error(`Database save failed: ${error.message}`);
+                }
+                
+                showNotification(`✅ נשמר בהצלחה! ${annotations.length} אובייקטים`, 'success');
+                resetUpload();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification(`שגיאה: ${error.message}`, 'error');
+                saveLocally();
+            }
+        }
+        
+        function saveLocally() {
+            const localData = JSON.parse(localStorage.getItem('yolo_dataset') || '[]');
+            
+            const yoloAnnotations = annotations.map(ann => ({
+                category: ann.category,
+                product: ann.product,
+                center_x: (ann.x + ann.width / 2) / canvas.width,
+                center_y: (ann.y + ann.height / 2) / canvas.height,
+                width: ann.width / canvas.width,
+                height: ann.height / canvas.height,
+                parameters: ann.parameters
+            }));
+            
+            localData.push({
+                id: Date.now(),
+                user_name: currentUser,
+                annotations: yoloAnnotations,
+                image_data: canvas.toDataURL('image/jpeg', 0.8),
+                created_at: new Date().toISOString()
+            });
+            
+            localStorage.setItem('yolo_dataset', JSON.stringify(localData));
+            showNotification('💾 נשמר מקומית בטלפון', 'success');
+            resetUpload();
+        }
+        
+        function showNotification(message, type) {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification ' + type;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
