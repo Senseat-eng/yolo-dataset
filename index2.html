@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🥑 YOLO Dataset Creator - Enhanced</title>
+    <title>?? YOLO Dataset Creator - Enhanced</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2.38.0/dist/umd/supabase.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -187,13 +187,33 @@
             font-size: 1.1em;
         }
         
+        .slider-container {
+            position: relative;
+            padding: 0 10px;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75em;
+            color: rgba(255,255,255,0.7);
+            margin-top: 4px;
+        }
+        
         .slider {
             width: 100%;
             height: 8px;
             border-radius: 5px;
-            background: rgba(255,255,255,0.3);
             outline: none;
             -webkit-appearance: none;
+        }
+        
+        .slider.linear {
+            background: linear-gradient(to right, #ff4444, #ffaa00, #44ff44);
+        }
+        
+        .slider.optimal {
+            background: linear-gradient(to right, #ff4444, #ffaa00 25%, #44ff44 50%, #ffaa00 75%, #ff4444);
         }
         
         .slider::-webkit-slider-thumb {
@@ -268,52 +288,58 @@
             margin: 15px 0;
             text-align: center;
         }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🥑 YOLO Dataset Creator - Enhanced</h1>
-            <p>אוסף תמונות משותף לאימון מודל זיהוי עם פרמטרים מתקדמים</p>
+            <h1>?? YOLO Dataset Creator - Enhanced</h1>
+            <p>???? ?????? ????? ?????? ???? ????? ?? ??????? ???????</p>
         </div>
         
         <div id="statusBar" class="status-bar connected">
-            <span id="statusText">✅ מחובר למסד נתונים משותף</span>
+            <span id="statusText">? ????? ???? ?????? ?????</span>
         </div>
         
         <div id="loginSection" class="login-section">
-            <h2>🚀 בוא נתחיל!</h2>
-            <p><strong>הכנס את השם שלך באנגלית בלבד</strong></p>
-            <p style="font-size: 0.9em; color: #ffeb3b; margin: 10px 0;">⚠️ רק אותיות אנגליות! דוגמה: Uri, Dan, Maya, Alex</p>
+            <h2>?? ??? ?????!</h2>
+            <p><strong>???? ?? ??? ??? ??????? ????</strong></p>
+            <p style="font-size: 0.9em; color: #ffeb3b; margin: 10px 0;">?? ?? ?????? ???????! ?????: Uri, Dan, Maya, Alex</p>
             <input type="text" id="userName" class="user-input" placeholder="Your name in English only" maxlength="15">
             <br>
-            <button onclick="login()" class="btn">התחל לתרום</button>
+            <button onclick="login()" class="btn">???? ?????</button>
         </div>
         
         <div id="mainApp" class="main-content">
             <div class="login-section">
-                <p>שלום <strong id="currentUser"></strong>! 👋</p>
-                <button onclick="logout()" class="btn btn-danger">התנתק</button>
+                <p>???? <strong id="currentUser"></strong>! ??</p>
+                <button onclick="logout()" class="btn btn-danger">?????</button>
             </div>
             
             <div>
-                <h3>העלאת תמונה חדשה</h3>
+                <h3>????? ????? ????</h3>
                 
                 <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
-                    <h3>📷 צלם או העלה תמונה</h3>
-                    <p>לחץ כאן או גרור תמונה</p>
+                    <h3>?? ??? ?? ???? ?????</h3>
+                    <p>??? ??? ?? ???? ?????</p>
                     <input type="file" id="imageInput" accept="image/*" capture="environment" style="display:none">
                 </div>
                 
                 <div id="categorySection" class="hidden">
-                    <h3>בחר את סוג המוצר:</h3>
+                    <h3>??? ?? ??? ?????:</h3>
                     <div class="categories">
-                        <button class="category-btn" data-category="0" data-product="avocado">🥑 אבוקדו</button>
-                        <button class="category-btn" data-category="1" data-product="mango">🥭 מנגו</button>
-                        <button class="category-btn" data-category="2" data-product="cucumber">🥒 מלפפון</button>
-                        <button class="category-btn" data-category="3" data-product="apple">🍎 תפוח</button>
-                        <button class="category-btn" data-category="4" data-product="tomato">🍅 עגבניה</button>
-                        <button class="category-btn" data-category="5" data-product="chicken">🍗 חזה עוף</button>
+                        <button class="category-btn" data-category="0" data-product="avocado">?? ??????</button>
+                        <button class="category-btn" data-category="1" data-product="mango">?? ????</button>
+                        <button class="category-btn" data-category="2" data-product="cucumber">?? ??????</button>
+                        <button class="category-btn" data-category="3" data-product="apple">?? ????</button>
+                        <button class="category-btn" data-category="4" data-product="tomato">?? ??????</button>
+                        <button class="category-btn" data-category="5" data-product="chicken">?? ??? ???</button>
                     </div>
                 </div>
                 
@@ -323,33 +349,37 @@
                     </div>
                     
                     <div class="instructions">
-                        <strong>הוראות:</strong> בחר קטגוריה ואז לחץ וגרור על התמונה ליצירת ריבוע סביב המוצר
+                        <strong>??????:</strong> ??? ??????? ??? ??? ????? ?? ?????? ?????? ????? ???? ?????
                     </div>
                     
                     <div id="parametersSection" class="parameters-section hidden">
-                        <h3 style="text-align: center; margin-bottom: 20px;">⚙️ הגדר פרמטרים למוצר</h3>
+                        <div id="loadingParams" class="loading">???? ???????...</div>
                         
-                        <div class="param-group">
-                            <div class="param-group-header" onclick="toggleGroup('visible')">
-                                <span>👁️ פרמטרים נראים למשתמש</span>
-                                <span class="toggle-icon" id="toggle-visible">▼</span>
+                        <div id="paramsContent" class="hidden">
+                            <h3 style="text-align: center; margin-bottom: 20px;">?? ???? ??????? ?????</h3>
+                            
+                            <div class="param-group">
+                                <div class="param-group-header" onclick="toggleGroup('visible')">
+                                    <span>??? ??????? ????? ??????</span>
+                                    <span class="toggle-icon" id="toggle-visible">��</span>
+                                </div>
+                                <div class="param-group-content" id="visibleParams"></div>
                             </div>
-                            <div class="param-group-content" id="visibleParams"></div>
-                        </div>
-                        
-                        <div class="param-group">
-                            <div class="param-group-header" onclick="toggleGroup('hidden')">
-                                <span>🔒 פרמטרים נסתרים/רצויים</span>
-                                <span class="toggle-icon" id="toggle-hidden">▼</span>
+                            
+                            <div class="param-group">
+                                <div class="param-group-header" onclick="toggleGroup('hidden')">
+                                    <span>?? ??????? ??????/??????</span>
+                                    <span class="toggle-icon" id="toggle-hidden">��</span>
+                                </div>
+                                <div class="param-group-content" id="hiddenParams"></div>
                             </div>
-                            <div class="param-group-content" id="hiddenParams"></div>
                         </div>
                     </div>
                     
                     <div class="controls">
-                        <button onclick="saveAnnotation()" class="btn btn-success">💾 שמור</button>
-                        <button onclick="clearCanvas()" class="btn btn-danger">🗑️ נקה</button>
-                        <button onclick="resetUpload()" class="btn btn-primary">🔄 תמונה חדשה</button>
+                        <button onclick="saveAnnotation()" class="btn btn-success">?? ????</button>
+                        <button onclick="clearCanvas()" class="btn btn-danger">??? ???</button>
+                        <button onclick="resetUpload()" class="btn btn-primary">?? ????? ????</button>
                     </div>
                 </div>
             </div>
@@ -362,94 +392,7 @@
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // Parameters configuration from Excel
-        const PARAMETERS = {
-            "apple": {
-                "visible": {
-                    "color_quality": "איכות צבע",
-                    "shape_integrity": "תקינות צורה",
-                    "surface_defects": "פגמי משטח",
-                    "shine": "ברק קליפה"
-                },
-                "hidden": {
-                    "taste": "טעם",
-                    "crispness": "פריכות/טקסטורה",
-                    "ripeness": "בשלות",
-                    "overall_score": "ציון כללי"
-                }
-            },
-            "tomato": {
-                "visible": {
-                    "color_quality": "איכות צבע",
-                    "shape_integrity": "תקינות צורה",
-                    "surface_defects": "פגמי משטח",
-                    "firmness": "מוצקות"
-                },
-                "hidden": {
-                    "taste": "טעם",
-                    "acidity": "חמיצות",
-                    "ripeness": "בשלות",
-                    "overall_score": "ציון כללי"
-                }
-            },
-            "cucumber": {
-                "visible": {
-                    "color_quality": "איכות צבע",
-                    "straightness": "ישרות",
-                    "surface_defects": "פגמי משטח",
-                    "diameter_uniform": "אחידות קוטר"
-                },
-                "hidden": {
-                    "taste": "טעם",
-                    "crispness": "פריכות/טקסטורה",
-                    "freshness": "רעננות",
-                    "overall_score": "ציון כללי"
-                }
-            },
-            "avocado": {
-                "visible": {
-                    "skin_color": "צבע קליפה",
-                    "softness": "רכות",
-                    "surface_defects": "פגמי משטח",
-                    "size_uniform": "אחידות גודל"
-                },
-                "hidden": {
-                    "taste": "טעם",
-                    "inner_texture": "רכות פנימית",
-                    "ripeness": "בשלות",
-                    "overall_score": "ציון כללי"
-                }
-            },
-            "mango": {
-                "visible": {
-                    "color_stage": "שלב צבע",
-                    "softness": "רכות",
-                    "surface_defects": "פגמי משטח",
-                    "aroma": "ריח"
-                },
-                "hidden": {
-                    "taste": "טעם",
-                    "fiber_content": "סיביות",
-                    "ripeness": "בשלות",
-                    "overall_score": "ציון כללי"
-                }
-            },
-            "chicken": {
-                "visible": {
-                    "color_quality": "איכות צבע",
-                    "texture_visual": "מרקם נראה",
-                    "surface_defects": "פגמי משטח",
-                    "size_uniform": "אחידות גודל"
-                },
-                "hidden": {
-                    "taste": "טעם",
-                    "tenderness": "רכות",
-                    "juiciness": "עסיסיות",
-                    "overall_score": "ציון כללי"
-                }
-            }
-        };
-        
+        let PARAMETERS = {};
         let currentUser = '';
         let currentImage = null;
         let selectedCategory = null;
@@ -460,14 +403,49 @@
         let startX, startY;
         
         const categories = ['avocado', 'mango', 'cucumber', 'apple', 'tomato', 'chicken_breast'];
-        const categoryNames = ['אבוקדו', 'מנגו', 'מלפפון', 'תפוח', 'עגבניה', 'חזה עוף'];
+        const categoryNames = ['??????', '????', '??????', '????', '??????', '??? ???'];
         
         const canvas = document.getElementById('imageCanvas');
         const ctx = canvas.getContext('2d');
         
         document.addEventListener('DOMContentLoaded', function() {
             initApp();
+            loadParametersFromSupabase();
         });
+        
+        async function loadParametersFromSupabase() {
+            try {
+                const { data, error } = await supabase
+                    .from('parameters')
+                    .select('*');
+                
+                if (error) throw error;
+                
+                PARAMETERS = {};
+                
+                data.forEach(row => {
+                    if (!PARAMETERS[row.product]) {
+                        PARAMETERS[row.product] = { visible: {}, hidden: {} };
+                    }
+                    
+                    PARAMETERS[row.product][row.param_type][row.param_id] = {
+                        name: row.param_name,
+                        min: row.min_value,
+                        max: row.max_value,
+                        default: row.default_value,
+                        step: row.step_value,
+                        scale_type: row.scale_type || 'linear'
+                    };
+                });
+                
+                console.log('Parameters loaded:', PARAMETERS);
+                showNotification('? ??????? ????? ??????', 'success');
+                
+            } catch (error) {
+                console.error('Error loading parameters:', error);
+                showNotification('????? ?????? ???????', 'error');
+            }
+        }
         
         function initApp() {
             const imageInput = document.getElementById('imageInput');
@@ -515,25 +493,25 @@
             const userName = document.getElementById('userName').value.trim();
             
             if (!userName) {
-                showNotification('❌ אנא הכנס שם', 'error');
+                showNotification('? ??? ???? ??', 'error');
                 return;
             }
             
             const englishOnlyRegex = /^[a-zA-Z]+$/;
             if (!englishOnlyRegex.test(userName)) {
-                showNotification('❌ השם חייב להכיל רק אותיות אנגליות!', 'error');
+                showNotification('? ??? ???? ????? ?? ?????? ???????!', 'error');
                 return;
             }
             
             if (userName.length < 2 || userName.length > 15) {
-                showNotification('❌ השם חייב להיות בין 2-15 אותיות', 'error');
+                showNotification('? ??? ???? ????? ??? 2-15 ??????', 'error');
                 return;
             }
             
             currentUser = userName;
             localStorage.setItem('yolo_user', currentUser);
             document.getElementById('currentUser').textContent = currentUser;
-            showNotification('✅ שם תקין! מתחיל...', 'success');
+            showNotification('? ?? ????! ?????...', 'success');
             showMainApp();
         }
         
@@ -559,7 +537,7 @@
         
         function loadImageFile(file) {
             if (file.size > 10 * 1024 * 1024) {
-                showNotification('קובץ גדול מדי (מקסימום 10MB)', 'error');
+                showNotification('???? ???? ??? (??????? 10MB)', 'error');
                 return;
             }
             
@@ -627,11 +605,16 @@
         
         function loadParameters(product) {
             const params = PARAMETERS[product];
-            if (!params) return;
+            if (!params) {
+                showNotification('??????? ????? ??????...', 'error');
+                return;
+            }
             
             currentParameters = {};
             
             document.getElementById('parametersSection').classList.remove('hidden');
+            document.getElementById('loadingParams').classList.add('hidden');
+            document.getElementById('paramsContent').classList.remove('hidden');
             
             const visibleContainer = document.getElementById('visibleParams');
             const hiddenContainer = document.getElementById('hiddenParams');
@@ -639,29 +622,49 @@
             visibleContainer.innerHTML = '';
             hiddenContainer.innerHTML = '';
             
-            Object.entries(params.visible).forEach(([id, name]) => {
-                createParameterSlider(visibleContainer, id, name, 'visible');
+            Object.entries(params.visible).forEach(([id, paramData]) => {
+                createParameterSlider(visibleContainer, id, paramData, 'visible');
             });
             
-            Object.entries(params.hidden).forEach(([id, name]) => {
-                createParameterSlider(hiddenContainer, id, name, 'hidden');
+            Object.entries(params.hidden).forEach(([id, paramData]) => {
+                createParameterSlider(hiddenContainer, id, paramData, 'hidden');
             });
         }
         
-        function createParameterSlider(container, id, name, type) {
+        function createParameterSlider(container, id, paramData, type) {
             const paramItem = document.createElement('div');
             paramItem.className = 'param-item';
             
-            const defaultValue = 5;
+            const defaultValue = paramData.default;
             currentParameters[id] = defaultValue;
+            
+            const scaleType = paramData.scale_type || 'linear';
+            
+            let leftLabel = '????';
+            let rightLabel = '?????';
+            
+            if (scaleType === 'optimal') {
+                leftLabel = '??????';
+                rightLabel = '??????';
+            } else if (id === 'surface_defects') {
+                leftLabel = '???? ?????';
+                rightLabel = '?????';
+            }
             
             paramItem.innerHTML = `
                 <div class="param-label">
-                    <span>${name}</span>
+                    <span>${paramData.name}</span>
                     <span class="param-value" id="value-${id}">${defaultValue.toFixed(1)}</span>
                 </div>
-                <input type="range" class="slider" id="slider-${id}" 
-                       min="0" max="10" step="0.5" value="${defaultValue}">
+                <div class="slider-container">
+                    <input type="range" class="slider ${scaleType}" id="slider-${id}" 
+                           min="${paramData.min}" max="${paramData.max}" 
+                           step="${paramData.step}" value="${defaultValue}">
+                    <div class="slider-labels">
+                        <span>${leftLabel}</span>
+                        <span>${rightLabel}</span>
+                    </div>
+                </div>
             `;
             
             container.appendChild(paramItem);
@@ -684,7 +687,7 @@
         
         function startDrawing(e) {
             if (selectedCategory === null) {
-                showNotification('בחר קטגוריה תחילה', 'error');
+                showNotification('??? ??????? ?????', 'error');
                 return;
             }
             
@@ -746,18 +749,20 @@
             document.getElementById('categorySection').classList.add('hidden');
             document.getElementById('canvasSection').classList.add('hidden');
             document.getElementById('parametersSection').classList.add('hidden');
+            document.getElementById('loadingParams').classList.remove('hidden');
+            document.getElementById('paramsContent').classList.add('hidden');
             document.getElementById('imageInput').value = '';
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
         }
         
         async function saveAnnotation() {
             if (!currentImage || annotations.length === 0) {
-                showNotification('אין אנוטציות לשמור', 'error');
+                showNotification('??? ???????? ?????', 'error');
                 return;
             }
             
             try {
-                showNotification('שומר...', 'success');
+                showNotification('????...', 'success');
                 
                 const blob = await new Promise(resolve => {
                     canvas.toBlob(resolve, 'image/jpeg', 0.8);
@@ -796,12 +801,12 @@
                     throw new Error(`Database save failed: ${error.message}`);
                 }
                 
-                showNotification(`✅ נשמר בהצלחה! ${annotations.length} אובייקטים`, 'success');
+                showNotification(`? ???? ??????! ${annotations.length} ?????????`, 'success');
                 resetUpload();
                 
             } catch (error) {
                 console.error('Error:', error);
-                showNotification(`שגיאה: ${error.message}`, 'error');
+                showNotification(`?????: ${error.message}`, 'error');
                 saveLocally();
             }
         }
@@ -828,7 +833,7 @@
             });
             
             localStorage.setItem('yolo_dataset', JSON.stringify(localData));
-            showNotification('💾 נשמר מקומית בטלפון', 'success');
+            showNotification('?? ???? ?????? ??????', 'success');
             resetUpload();
         }
         
