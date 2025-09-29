@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>?? YOLO Dataset Creator - Enhanced</title>
+    <title>🥑 YOLO Dataset Creator - Enhanced</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2.38.0/dist/umd/supabase.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -299,47 +299,47 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>?? YOLO Dataset Creator - Enhanced</h1>
-            <p>???? ?????? ????? ?????? ???? ????? ?? ??????? ???????</p>
+            <h1>🥑 YOLO Dataset Creator - Enhanced</h1>
+            <p>אוסף תמונות משותף לאימון מודל זיהוי עם פרמטרים מתקדמים</p>
         </div>
         
         <div id="statusBar" class="status-bar connected">
-            <span id="statusText">? ????? ???? ?????? ?????</span>
+            <span id="statusText">✅ מחובר למסד נתונים משותף</span>
         </div>
         
         <div id="loginSection" class="login-section">
-            <h2>?? ??? ?????!</h2>
-            <p><strong>???? ?? ??? ??? ??????? ????</strong></p>
-            <p style="font-size: 0.9em; color: #ffeb3b; margin: 10px 0;">?? ?? ?????? ???????! ?????: Uri, Dan, Maya, Alex</p>
+            <h2>🚀 בוא נתחיל!</h2>
+            <p><strong>הכנס את השם שלך באנגלית בלבד</strong></p>
+            <p style="font-size: 0.9em; color: #ffeb3b; margin: 10px 0;">⚠️ רק אותיות אנגליות! דוגמה: Uri, Dan, Maya, Alex</p>
             <input type="text" id="userName" class="user-input" placeholder="Your name in English only" maxlength="15">
             <br>
-            <button onclick="login()" class="btn">???? ?????</button>
+            <button onclick="login()" class="btn">התחל לתרום</button>
         </div>
         
         <div id="mainApp" class="main-content">
             <div class="login-section">
-                <p>???? <strong id="currentUser"></strong>! ??</p>
-                <button onclick="logout()" class="btn btn-danger">?????</button>
+                <p>שלום <strong id="currentUser"></strong>! 👋</p>
+                <button onclick="logout()" class="btn btn-danger">התנתק</button>
             </div>
             
             <div>
-                <h3>????? ????? ????</h3>
+                <h3>העלאת תמונה חדשה</h3>
                 
                 <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
-                    <h3>?? ??? ?? ???? ?????</h3>
-                    <p>??? ??? ?? ???? ?????</p>
+                    <h3>📷 צלם או העלה תמונה</h3>
+                    <p>לחץ כאן או גרור תמונה</p>
                     <input type="file" id="imageInput" accept="image/*" capture="environment" style="display:none">
                 </div>
                 
                 <div id="categorySection" class="hidden">
-                    <h3>??? ?? ??? ?????:</h3>
+                    <h3>בחר את סוג המוצר:</h3>
                     <div class="categories">
-                        <button class="category-btn" data-category="0" data-product="avocado">?? ??????</button>
-                        <button class="category-btn" data-category="1" data-product="mango">?? ????</button>
-                        <button class="category-btn" data-category="2" data-product="cucumber">?? ??????</button>
-                        <button class="category-btn" data-category="3" data-product="apple">?? ????</button>
-                        <button class="category-btn" data-category="4" data-product="tomato">?? ??????</button>
-                        <button class="category-btn" data-category="5" data-product="chicken">?? ??? ???</button>
+                        <button class="category-btn" data-category="0" data-product="avocado">🥑 אבוקדו</button>
+                        <button class="category-btn" data-category="1" data-product="mango">🥭 מנגו</button>
+                        <button class="category-btn" data-category="2" data-product="cucumber">🥒 מלפפון</button>
+                        <button class="category-btn" data-category="3" data-product="apple">🍎 תפוח</button>
+                        <button class="category-btn" data-category="4" data-product="tomato">🍅 עגבניה</button>
+                        <button class="category-btn" data-category="5" data-product="chicken">🍗 חזה עוף</button>
                     </div>
                 </div>
                 
@@ -349,27 +349,27 @@
                     </div>
                     
                     <div class="instructions">
-                        <strong>??????:</strong> ??? ??????? ??? ??? ????? ?? ?????? ?????? ????? ???? ?????
+                        <strong>הוראות:</strong> בחר קטגוריה ואז לחץ וגרור על התמונה ליצירת ריבוע סביב המוצר
                     </div>
                     
                     <div id="parametersSection" class="parameters-section hidden">
-                        <div id="loadingParams" class="loading">???? ???????...</div>
+                        <div id="loadingParams" class="loading">טוען פרמטרים...</div>
                         
                         <div id="paramsContent" class="hidden">
-                            <h3 style="text-align: center; margin-bottom: 20px;">?? ???? ??????? ?????</h3>
+                            <h3 style="text-align: center; margin-bottom: 20px;">⚙️ הגדר פרמטרים למוצר</h3>
                             
                             <div class="param-group">
                                 <div class="param-group-header" onclick="toggleGroup('visible')">
-                                    <span>??? ??????? ????? ??????</span>
-                                    <span class="toggle-icon" id="toggle-visible">��</span>
+                                    <span>👁️ פרמטרים נראים למשתמש</span>
+                                    <span class="toggle-icon" id="toggle-visible">▼</span>
                                 </div>
                                 <div class="param-group-content" id="visibleParams"></div>
                             </div>
                             
                             <div class="param-group">
                                 <div class="param-group-header" onclick="toggleGroup('hidden')">
-                                    <span>?? ??????? ??????/??????</span>
-                                    <span class="toggle-icon" id="toggle-hidden">��</span>
+                                    <span>🔒 פרמטרים נסתרים/רצויים</span>
+                                    <span class="toggle-icon" id="toggle-hidden">▼</span>
                                 </div>
                                 <div class="param-group-content" id="hiddenParams"></div>
                             </div>
@@ -377,9 +377,9 @@
                     </div>
                     
                     <div class="controls">
-                        <button onclick="saveAnnotation()" class="btn btn-success">?? ????</button>
-                        <button onclick="clearCanvas()" class="btn btn-danger">??? ???</button>
-                        <button onclick="resetUpload()" class="btn btn-primary">?? ????? ????</button>
+                        <button onclick="saveAnnotation()" class="btn btn-success">💾 שמור</button>
+                        <button onclick="clearCanvas()" class="btn btn-danger">🗑️ נקה</button>
+                        <button onclick="resetUpload()" class="btn btn-primary">🔄 תמונה חדשה</button>
                     </div>
                 </div>
             </div>
@@ -403,7 +403,7 @@
         let startX, startY;
         
         const categories = ['avocado', 'mango', 'cucumber', 'apple', 'tomato', 'chicken_breast'];
-        const categoryNames = ['??????', '????', '??????', '????', '??????', '??? ???'];
+        const categoryNames = ['אבוקדו', 'מנגו', 'מלפפון', 'תפוח', 'עגבניה', 'חזה עוף'];
         
         const canvas = document.getElementById('imageCanvas');
         const ctx = canvas.getContext('2d');
@@ -439,11 +439,11 @@
                 });
                 
                 console.log('Parameters loaded:', PARAMETERS);
-                showNotification('? ??????? ????? ??????', 'success');
+                showNotification('✅ פרמטרים נטענו בהצלחה', 'success');
                 
             } catch (error) {
                 console.error('Error loading parameters:', error);
-                showNotification('????? ?????? ???????', 'error');
+                showNotification('שגיאה בטעינת פרמטרים', 'error');
             }
         }
         
@@ -493,25 +493,25 @@
             const userName = document.getElementById('userName').value.trim();
             
             if (!userName) {
-                showNotification('? ??? ???? ??', 'error');
+                showNotification('❌ אנא הכנס שם', 'error');
                 return;
             }
             
             const englishOnlyRegex = /^[a-zA-Z]+$/;
             if (!englishOnlyRegex.test(userName)) {
-                showNotification('? ??? ???? ????? ?? ?????? ???????!', 'error');
+                showNotification('❌ השם חייב להכיל רק אותיות אנגליות!', 'error');
                 return;
             }
             
             if (userName.length < 2 || userName.length > 15) {
-                showNotification('? ??? ???? ????? ??? 2-15 ??????', 'error');
+                showNotification('❌ השם חייב להיות בין 2-15 אותיות', 'error');
                 return;
             }
             
             currentUser = userName;
             localStorage.setItem('yolo_user', currentUser);
             document.getElementById('currentUser').textContent = currentUser;
-            showNotification('? ?? ????! ?????...', 'success');
+            showNotification('✅ שם תקין! מתחיל...', 'success');
             showMainApp();
         }
         
@@ -537,7 +537,7 @@
         
         function loadImageFile(file) {
             if (file.size > 10 * 1024 * 1024) {
-                showNotification('???? ???? ??? (??????? 10MB)', 'error');
+                showNotification('קובץ גדול מדי (מקסימום 10MB)', 'error');
                 return;
             }
             
@@ -606,7 +606,7 @@
         function loadParameters(product) {
             const params = PARAMETERS[product];
             if (!params) {
-                showNotification('??????? ????? ??????...', 'error');
+                showNotification('פרמטרים עדיין נטענים...', 'error');
                 return;
             }
             
@@ -640,15 +640,15 @@
             
             const scaleType = paramData.scale_type || 'linear';
             
-            let leftLabel = '????';
-            let rightLabel = '?????';
+            let leftLabel = 'גרוע';
+            let rightLabel = 'מושלם';
             
             if (scaleType === 'optimal') {
-                leftLabel = '??????';
-                rightLabel = '??????';
+                leftLabel = 'קיצוני';
+                rightLabel = 'קיצוני';
             } else if (id === 'surface_defects') {
-                leftLabel = '???? ?????';
-                rightLabel = '?????';
+                leftLabel = 'הרבה פגמים';
+                rightLabel = 'מושלם';
             }
             
             paramItem.innerHTML = `
@@ -687,7 +687,7 @@
         
         function startDrawing(e) {
             if (selectedCategory === null) {
-                showNotification('??? ??????? ?????', 'error');
+                showNotification('בחר קטגוריה תחילה', 'error');
                 return;
             }
             
@@ -757,12 +757,12 @@
         
         async function saveAnnotation() {
             if (!currentImage || annotations.length === 0) {
-                showNotification('??? ???????? ?????', 'error');
+                showNotification('אין אנוטציות לשמור', 'error');
                 return;
             }
             
             try {
-                showNotification('????...', 'success');
+                showNotification('שומר...', 'success');
                 
                 const blob = await new Promise(resolve => {
                     canvas.toBlob(resolve, 'image/jpeg', 0.8);
@@ -801,12 +801,12 @@
                     throw new Error(`Database save failed: ${error.message}`);
                 }
                 
-                showNotification(`? ???? ??????! ${annotations.length} ?????????`, 'success');
+                showNotification(`✅ נשמר בהצלחה! ${annotations.length} אובייקטים`, 'success');
                 resetUpload();
                 
             } catch (error) {
                 console.error('Error:', error);
-                showNotification(`?????: ${error.message}`, 'error');
+                showNotification(`שגיאה: ${error.message}`, 'error');
                 saveLocally();
             }
         }
@@ -833,7 +833,7 @@
             });
             
             localStorage.setItem('yolo_dataset', JSON.stringify(localData));
-            showNotification('?? ???? ?????? ??????', 'success');
+            showNotification('💾 נשמר מקומית בטלפון', 'success');
             resetUpload();
         }
         
