@@ -215,7 +215,11 @@
         .slider.optimal {
             background: linear-gradient(to right, #ff4444, #ffaa00 25%, #44ff44 50%, #ffaa00 75%, #ff4444);
         }
-        
+
+        .slider.reversed {
+            background: linear-gradient(to right, #44ff44, #ffaa00, #ff4444);
+        }
+
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -634,31 +638,41 @@
         function createParameterSlider(container, id, paramData, type) {
             const paramItem = document.createElement('div');
             paramItem.className = 'param-item';
-            
+
             const defaultValue = paramData.default;
             currentParameters[id] = defaultValue;
-            
+
             const scaleType = paramData.scale_type || 'linear';
-            
+
             let leftLabel = 'גרוע';
             let rightLabel = 'מושלם';
-            
+
             if (scaleType === 'optimal') {
                 leftLabel = 'קיצוני';
                 rightLabel = 'קיצוני';
-            } else if (id === 'surface_defects') {
-                leftLabel = 'הרבה פגמים';
-                rightLabel = 'מושלם';
+            } else if (scaleType === 'reversed') {
+                leftLabel = 'קשה מידי';
+                rightLabel = 'רך מידי';
+            } else if (scaleType === 'reversed_gradient') {
+                leftLabel = 'מושלם';
+                rightLabel = 'הרבה פגמים';
             }
-            
+
+            let gradientClass = 'linear';
+            if (scaleType === 'optimal') {
+                gradientClass = 'optimal';
+            } else if (scaleType === 'reversed_gradient') {
+                gradientClass = 'reversed';
+            }
+
             paramItem.innerHTML = `
                 <div class="param-label">
                     <span>${paramData.name}</span>
                     <span class="param-value" id="value-${id}">${defaultValue.toFixed(1)}</span>
                 </div>
                 <div class="slider-container">
-                    <input type="range" class="slider ${scaleType}" id="slider-${id}" 
-                           min="${paramData.min}" max="${paramData.max}" 
+                    <input type="range" class="slider ${gradientClass}" id="slider-${id}"
+                           min="${paramData.min}" max="${paramData.max}"
                            step="${paramData.step}" value="${defaultValue}">
                     <div class="slider-labels">
                         <span>${leftLabel}</span>
@@ -666,9 +680,9 @@
                     </div>
                 </div>
             `;
-            
+
             container.appendChild(paramItem);
-            
+
             const slider = document.getElementById(`slider-${id}`);
             slider.addEventListener('input', function(e) {
                 const value = parseFloat(e.target.value);
