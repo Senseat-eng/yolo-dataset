@@ -216,10 +216,6 @@
             background: linear-gradient(to right, #ff4444, #ffaa00 25%, #44ff44 50%, #ffaa00 75%, #ff4444);
         }
 
-        .slider.reversed {
-            background: linear-gradient(to right, #44ff44, #ffaa00, #ff4444);
-        }
-
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -650,19 +646,12 @@
             if (scaleType === 'optimal') {
                 leftLabel = 'קיצוני';
                 rightLabel = 'קיצוני';
-            } else if (scaleType === 'reversed') {
+            } else if (id === 'softness') {
                 leftLabel = 'קשה מידי';
                 rightLabel = 'רך מידי';
-            } else if (scaleType === 'reversed_gradient') {
-                leftLabel = 'מושלם';
-                rightLabel = 'הרבה פגמים';
-            }
-
-            let gradientClass = 'linear';
-            if (scaleType === 'optimal') {
-                gradientClass = 'optimal';
-            } else if (scaleType === 'reversed_gradient') {
-                gradientClass = 'reversed';
+            } else if (id === 'surface_defects') {
+                leftLabel = 'הרבה פגמים';
+                rightLabel = 'מושלם';
             }
 
             paramItem.innerHTML = `
@@ -671,7 +660,7 @@
                     <span class="param-value" id="value-${id}">${defaultValue.toFixed(1)}</span>
                 </div>
                 <div class="slider-container">
-                    <input type="range" class="slider ${gradientClass}" id="slider-${id}"
+                    <input type="range" class="slider ${scaleType}" id="slider-${id}"
                            min="${paramData.min}" max="${paramData.max}"
                            step="${paramData.step}" value="${defaultValue}">
                     <div class="slider-labels">
