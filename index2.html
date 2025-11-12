@@ -381,7 +381,8 @@
                     </div>
 
                     <div class="controls">
-                        <button onclick="saveAnnotation()" class="btn btn-success">💾 שמור</button>
+                        <button onclick="addCurrentAnnotation()" class="btn btn-warning" id="addAnnotationBtn" style="display:none;">➕ הוסף אנוטציה זו</button>
+                        <button onclick="saveAnnotation()" class="btn btn-success">💾 שמור הכל</button>
                         <button onclick="clearCanvas()" class="btn btn-danger">🗑️ נקה</button>
                         <button onclick="resetUpload()" class="btn btn-primary">🔄 תמונה חדשה</button>
                     </div>
@@ -404,6 +405,7 @@
         let currentParameters = {};
         let isDrawing = false;
         let annotations = [];
+        let pendingBox = null;  // NEW: holds box waiting for parameters
         let startX, startY;
 
         const categories = ['avocado', 'mango', 'cucumber', 'apple', 'tomato', 'chicken_breast'];
@@ -589,6 +591,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
 
+            // Draw saved annotations (green)
             annotations.forEach(ann => {
                 ctx.strokeStyle = '#00ff00';
                 ctx.lineWidth = 3;
@@ -598,6 +601,19 @@
                 ctx.font = 'bold 14px Arial';
                 ctx.fillText(categoryNames[ann.category], ann.x, ann.y - 5);
             });
+
+            // Draw pending box (yellow/orange - waiting for parameters)
+            if (pendingBox) {
+                ctx.strokeStyle = '#ffaa00';
+                ctx.lineWidth = 4;
+                ctx.setLineDash([10, 5]);
+                ctx.strokeRect(pendingBox.x, pendingBox.y, pendingBox.width, pendingBox.height);
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#ffaa00';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText(categoryNames[pendingBox.category] + ' (המתן...)', pendingBox.x, pendingBox.y - 5);
+            }
         }
 
         function selectCategory(btn) {
@@ -712,6 +728,13 @@
         function endDrawing(e) {
             if (!isDrawing) return;
 
+            // If there's already a pending box, warn user
+            if (pendingBox) {
+                showNotification('⚠️ שמור את האנוטציה הנוכחית לפני ציור חדש', 'error');
+                isDrawing = false;
+                return;
+            }
+
             isDrawing = false;
             const rect = canvas.getBoundingClientRect();
             const endX = e.clientX - rect.left;
@@ -723,19 +746,54 @@
             const height = Math.abs(endY - startY);
 
             if (width > 20 && height > 20) {
-                annotations.push({
+                // Store pending box - DON'T save parameters yet!
+                pendingBox = {
                     x: x, y: y, width: width, height: height,
                     category: selectedCategory,
-                    product: selectedProduct,
-                    parameters: {...currentParameters}
-                });
+                    product: selectedProduct
+                };
+
+                // Show the "Add Annotation" button
+                document.getElementById('addAnnotationBtn').style.display = 'inline-block';
+
+                // Draw the box temporarily
                 drawImage();
+
+                showNotification('🎯 התאם את הפרמטרים ולחץ "הוסף אנוטציה זו"', 'success');
             }
+        }
+
+        function addCurrentAnnotation() {
+            if (!pendingBox) {
+                showNotification('⚠️ לא נמצאה אנוטציה ממתינה', 'error');
+                return;
+            }
+
+            // NOW save the annotation with current parameter values
+            annotations.push({
+                ...pendingBox,
+                parameters: {...currentParameters}
+            });
+
+            // Clear pending box
+            pendingBox = null;
+
+            // Hide add button
+            document.getElementById('addAnnotationBtn').style.display = 'none';
+
+            // Reset parameters to defaults for next annotation
+            loadParameters(selectedProduct);
+
+            drawImage();
+            showNotification(`✅ נשמר! סה"כ ${annotations.length} תיוגים. ניתן לצייר עוד`, 'success');
         }
 
         function clearCanvas() {
             annotations = [];
+            pendingBox = null;
+            document.getElementById('addAnnotationBtn').style.display = 'none';
             drawImage();
+            showNotification('נוקה', 'success');
         }
 
         function resetUpload() {
@@ -744,6 +802,8 @@
             selectedProduct = null;
             currentParameters = {};
             annotations = [];
+            pendingBox = null;
+            document.getElementById('addAnnotationBtn').style.display = 'none';
             document.getElementById('categorySection').classList.add('hidden');
             document.getElementById('canvasSection').classList.add('hidden');
             document.getElementById('parametersSection').classList.add('hidden');
