@@ -438,7 +438,9 @@
                         max: row.max_value,
                         default: row.default_value,
                         step: row.step_value,
-                        scale_type: row.scale_type || 'linear'
+                        gradient_class: row.gradient_class || 'linear',
+                        left_label: row.left_label || 'גרוע',
+                        right_label: row.right_label || 'מושלם'
                     };
                 });
 
