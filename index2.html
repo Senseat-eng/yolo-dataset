@@ -216,6 +216,10 @@
             background: linear-gradient(to right, #ff4444, #ffaa00 25%, #44ff44 50%, #ffaa00 75%, #ff4444);
         }
 
+        .slider.reversed {
+            background: linear-gradient(to right, #44ff44, #ffaa00, #ff4444);
+        }
+
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -640,18 +644,59 @@
 
             const scaleType = paramData.scale_type || 'linear';
 
+            // Determine gradient class based on parameter ID
+            let gradientClass = 'linear';
             let leftLabel = 'גרוע';
             let rightLabel = 'מושלם';
 
-            if (scaleType === 'optimal') {
-                leftLabel = 'קיצוני';
-                rightLabel = 'קיצוני';
+            // VISIBLE PARAMS
+            if (id === 'color_quality' || id === 'skin_color' || id === 'color_stage') {
+                // Color: reversed (green=good to red=bad)
+                gradientClass = 'reversed';
+                leftLabel = 'מושלם';
+                rightLabel = 'גרוע';
+            } else if (id === 'shape_integrity' || id === 'straightness' || id === 'size_uniform' || id === 'diameter_uniform') {
+                // Size/Shape: reversed (green=good to red=bad)
+                gradientClass = 'reversed';
+                leftLabel = 'מושלם';
+                rightLabel = 'גרוע';
             } else if (id === 'softness') {
+                // Softness: optimal (middle is best)
+                gradientClass = 'optimal';
                 leftLabel = 'קשה מידי';
                 rightLabel = 'רך מידי';
             } else if (id === 'surface_defects') {
-                leftLabel = 'הרבה פגמים';
+                // Defects: reversed (green=no defects to red=many defects)
+                gradientClass = 'reversed';
+                leftLabel = 'מושלם';
+                rightLabel = 'הרבה פגמים';
+            } else if (id === 'shine' || id === 'firmness' || id === 'aroma' || id === 'texture_visual') {
+                // Other visible: linear (red=bad to green=good)
+                gradientClass = 'linear';
+                leftLabel = 'גרוע';
                 rightLabel = 'מושלם';
+            }
+            // HIDDEN PARAMS
+            else if (id === 'taste') {
+                // Taste: reversed (green=excellent to red=bad)
+                gradientClass = 'reversed';
+                leftLabel = 'מושלם';
+                rightLabel = 'גרוע';
+            } else if (id === 'ripeness') {
+                // Ripeness: optimal (middle is best)
+                gradientClass = 'optimal';
+                leftLabel = 'לא בשל';
+                rightLabel = 'בשל מדי';
+            } else if (id === 'overall_score') {
+                // Overall: reversed (green=excellent to red=bad)
+                gradientClass = 'reversed';
+                leftLabel = 'מצוין';
+                rightLabel = 'גרוע';
+            } else if (scaleType === 'optimal') {
+                // Fallback for optimal scale_type from DB
+                gradientClass = 'optimal';
+                leftLabel = 'קיצוני';
+                rightLabel = 'קיצוני';
             }
 
             paramItem.innerHTML = `
@@ -660,7 +705,7 @@
                     <span class="param-value" id="value-${id}">${defaultValue.toFixed(1)}</span>
                 </div>
                 <div class="slider-container">
-                    <input type="range" class="slider ${scaleType}" id="slider-${id}"
+                    <input type="range" class="slider ${gradientClass}" id="slider-${id}"
                            min="${paramData.min}" max="${paramData.max}"
                            step="${paramData.step}" value="${defaultValue}">
                     <div class="slider-labels">
