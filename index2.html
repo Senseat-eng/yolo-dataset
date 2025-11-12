@@ -646,20 +646,20 @@
 
             // Determine gradient class based on parameter ID
             let gradientClass = 'linear';
-            let leftLabel = 'גרוע';
-            let rightLabel = 'מושלם';
+            let leftLabel = 'מושלם';
+            let rightLabel = 'גרוע';
 
             // VISIBLE PARAMS
             if (id === 'color_quality' || id === 'skin_color' || id === 'color_stage') {
                 // Color: reversed (green=good to red=bad)
                 gradientClass = 'reversed';
-                leftLabel = 'מושלם';
-                rightLabel = 'גרוע';
+                leftLabel = 'גרוע';
+                rightLabel = 'מושלם';
             } else if (id === 'shape_integrity' || id === 'straightness' || id === 'size_uniform' || id === 'diameter_uniform') {
                 // Size/Shape: reversed (green=good to red=bad)
                 gradientClass = 'reversed';
-                leftLabel = 'מושלם';
-                rightLabel = 'גרוע';
+                leftLabel = 'גרוע';
+                rightLabel = 'מושלם';
             } else if (id === 'softness') {
                 // Softness: optimal (middle is best)
                 gradientClass = 'optimal';
@@ -668,13 +668,13 @@
             } else if (id === 'surface_defects') {
                 // Defects: reversed (green=no defects to red=many defects)
                 gradientClass = 'reversed';
-                leftLabel = 'מושלם';
-                rightLabel = 'הרבה פגמים';
+                leftLabel = 'הרבה פגמים';
+                rightLabel = 'מושלם';
             } else if (id === 'shine' || id === 'firmness' || id === 'aroma' || id === 'texture_visual') {
                 // Other visible: linear (red=bad to green=good)
                 gradientClass = 'linear';
-                leftLabel = 'גרוע';
-                rightLabel = 'מושלם';
+                leftLabel = 'מושלם';
+                rightLabel = 'גרוע';
             }
             // HIDDEN PARAMS
             else if (id === 'taste') {
@@ -690,13 +690,13 @@
             } else if (id === 'overall_score') {
                 // Overall: reversed (green=excellent to red=bad)
                 gradientClass = 'reversed';
-                leftLabel = 'מצוין';
-                rightLabel = 'גרוע';
+                leftLabel = 'גרוע';
+                rightLabel = 'מצוין';
             } else if (scaleType === 'optimal') {
                 // Fallback for optimal scale_type from DB
                 gradientClass = 'optimal';
-                leftLabel = 'קיצוני';
-                rightLabel = 'קיצוני';
+                leftLabel = 'נמוך מידי';
+                rightLabel = 'יותר מידי';
             }
 
             paramItem.innerHTML = `
