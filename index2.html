@@ -646,20 +646,20 @@
 
             // Determine gradient class based on parameter ID
             let gradientClass = 'linear';
-            let leftLabel = 'גרוע';
-            let rightLabel = 'מושלם';
+            let leftLabel = 'מושלם';
+            let rightLabel = 'גרוע';
 
             // VISIBLE PARAMS
             if (id === 'color_quality' || id === 'skin_color' || id === 'color_stage') {
                 // Color: reversed (green=good to red=bad)
                 gradientClass = 'reversed';
-                leftLabel = 'גרוע';
-                rightLabel = 'מושלם';
+                leftLabel = 'מושלם';
+                rightLabel = 'גרוע';
             } else if (id === 'shape_integrity' || id === 'straightness' || id === 'size_uniform' || id === 'diameter_uniform') {
                 // Size/Shape: reversed (green=good to red=bad)
                 gradientClass = 'reversed';
-                leftLabel = 'גרוע';
-                rightLabel = 'מושלם';
+                leftLabel = 'מושלם';
+                rightLabel = 'גרוע';
             } else if (id === 'softness') {
                 // Softness: optimal (middle is best)
                 gradientClass = 'optimal';
@@ -668,8 +668,8 @@
             } else if (id === 'surface_defects') {
                 // Defects: reversed (green=no defects to red=many defects)
                 gradientClass = 'reversed';
-                leftLabel = 'הרבה פגמים';
-                rightLabel = 'מושלם';
+                leftLabel = 'מושלם';
+                rightLabel = 'הרבה פגמים';
             } else if (id === 'shine' || id === 'firmness' || id === 'aroma' || id === 'texture_visual') {
                 // Other visible: linear (red=bad to green=good)
                 gradientClass = 'linear';
