@@ -725,6 +725,67 @@
             ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
         }
 
+        async function getMLPredictions(x, y, width, height) {
+            try {
+                // Create temporary canvas to extract crop
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = width;
+                tempCanvas.height = height;
+                const tempCtx = tempCanvas.getContext('2d');
+
+                // Draw cropped region
+                tempCtx.drawImage(canvas, x, y, width, height, 0, 0, width, height);
+
+                // Convert to base64
+                const imageBase64 = tempCanvas.toDataURL('image/jpeg', 0.9);
+
+                // Call prediction API
+                const response = await fetch('http://localhost:5001/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        image: imageBase64
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Prediction API error');
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update sliders with ML predictions
+                    const predictions = result.visible_params;
+
+                    for (const [paramId, value] of Object.entries(predictions)) {
+                        if (currentParameters.hasOwnProperty(paramId)) {
+                            currentParameters[paramId] = value;
+
+                            // Update slider UI
+                            const slider = document.getElementById(`slider-${paramId}`);
+                            const valueDisplay = document.getElementById(`value-${paramId}`);
+
+                            if (slider && valueDisplay) {
+                                slider.value = value;
+                                valueDisplay.textContent = value.toFixed(1);
+                            }
+                        }
+                    }
+
+                    showNotification('✨ ML צפה ערכים! בדוק והתאם לפי הצורך', 'success');
+                } else {
+                    showNotification('⚠️ ML נכשל - התאם ידנית', 'warning');
+                }
+
+            } catch (error) {
+                console.error('ML prediction error:', error);
+                showNotification('⚠️ ML לא זמין - התאם ידנית', 'warning');
+            }
+        }
+
         function endDrawing(e) {
             if (!isDrawing) return;
 
@@ -759,7 +820,10 @@
                 // Draw the box temporarily
                 drawImage();
 
-                showNotification('🎯 התאם את הפרמטרים ולחץ "הוסף אנוטציה זו"', 'success');
+                showNotification('🔮 מנתח תמונה באמצעות ML...', 'info');
+
+                // Get ML predictions for this crop
+                getMLPredictions(x, y, width, height);
             }
         }
 
