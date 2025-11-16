@@ -736,30 +736,37 @@
                 // Draw cropped region
                 tempCtx.drawImage(canvas, x, y, width, height, 0, 0, width, height);
 
-                // Convert to base64
+                // Convert to base64 (remove data URL prefix for HF)
                 const imageBase64 = tempCanvas.toDataURL('image/jpeg', 0.9);
 
-                // Call prediction API
-                const response = await fetch('http://localhost:5001/predict', {
+                // HuggingFace API configuration
+                const HF_SPACE_URL = 'https://ankoru2025-green.hf.space/api/predict';
+                const API_TOKEN = 'tZfqDUnRvLJbPwcbzq9CWrbPaLydUx6f';
+
+                // Call HuggingFace Gradio API
+                // Gradio expects data array: [image, token]
+                const response = await fetch(HF_SPACE_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        image: imageBase64
+                        data: [imageBase64, API_TOKEN]
                     })
                 });
 
                 if (!response.ok) {
-                    throw new Error('Prediction API error');
+                    throw new Error(`API error: ${response.status}`);
                 }
 
                 const result = await response.json();
 
-                if (result.success) {
-                    // Update sliders with ML predictions
-                    const predictions = result.visible_params;
+                // Gradio returns: {data: [output_text, output_image, output_json]}
+                // We need the JSON output (index 2)
+                if (result.data && result.data[2] && result.data[2].success) {
+                    const predictions = result.data[2].visible_params;
 
+                    // Update sliders with ML predictions
                     for (const [paramId, value] of Object.entries(predictions)) {
                         if (currentParameters.hasOwnProperty(paramId)) {
                             currentParameters[paramId] = value;
