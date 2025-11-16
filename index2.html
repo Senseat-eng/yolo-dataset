@@ -736,22 +736,27 @@
                 // Draw cropped region
                 tempCtx.drawImage(canvas, x, y, width, height, 0, 0, width, height);
 
-                // Convert to base64 (remove data URL prefix for HF)
+                // Convert to base64
                 const imageBase64 = tempCanvas.toDataURL('image/jpeg', 0.9);
 
-                // HuggingFace API configuration
-                const HF_SPACE_URL = 'https://ankoru2025-green.hf.space/api/predict';
+                // Remove data URL prefix for cleaner upload
+                const base64Data = imageBase64.split(',')[1];
+
+                // HuggingFace Gradio API configuration
                 const API_TOKEN = 'tZfqDUnRvLJbPwcbzq9CWrbPaLydUx6f';
 
-                // Call HuggingFace Gradio API
-                // Gradio expects data array: [image, token]
-                const response = await fetch(HF_SPACE_URL, {
+                // Call HuggingFace Gradio client API
+                // The correct endpoint is /call/predict with event_data
+                const response = await fetch('https://ankoru2025-green.hf.space/call/predict', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        data: [imageBase64, API_TOKEN]
+                        data: [
+                            `data:image/jpeg;base64,${base64Data}`,
+                            API_TOKEN
+                        ]
                     })
                 });
 
@@ -759,12 +764,43 @@
                     throw new Error(`API error: ${response.status}`);
                 }
 
-                const result = await response.json();
+                const eventId = await response.json();
 
-                // Gradio returns: {data: [output_text, output_image, output_json]}
-                // We need the JSON output (index 2)
-                if (result.data && result.data[2] && result.data[2].success) {
-                    const predictions = result.data[2].visible_params;
+                // Now listen for the result
+                const resultResponse = await fetch(`https://ankoru2025-green.hf.space/call/predict/${eventId.event_id}`);
+
+                if (!resultResponse.ok) {
+                    throw new Error(`Result fetch error: ${resultResponse.status}`);
+                }
+
+                // Read the event stream
+                const reader = resultResponse.body.getReader();
+                const decoder = new TextDecoder();
+                let resultData = null;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const text = decoder.decode(value);
+                    const lines = text.split('\n').filter(line => line.trim());
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.slice(6));
+                                if (data[2] && data[2].success) {
+                                    resultData = data[2];
+                                }
+                            } catch (e) {
+                                // Skip invalid JSON
+                            }
+                        }
+                    }
+                }
+
+                if (resultData && resultData.visible_params) {
+                    const predictions = resultData.visible_params;
 
                     // Update sliders with ML predictions
                     for (const [paramId, value] of Object.entries(predictions)) {
