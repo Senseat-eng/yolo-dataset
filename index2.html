@@ -405,7 +405,8 @@
         let currentParameters = {};
         let isDrawing = false;
         let annotations = [];
-        let pendingBox = null;  // NEW: holds box waiting for parameters
+        let pendingBox = null;
+        let mlPredictions = null;  // Store ML predictions for comparison  // NEW: holds box waiting for parameters
         let startX, startY;
 
         const categories = ['avocado', 'mango', 'cucumber', 'apple', 'tomato', 'chicken_breast'];
@@ -802,6 +803,9 @@
                 if (resultData && resultData.visible_params) {
                     const predictions = resultData.visible_params;
 
+                    // STORE ML predictions for later comparison
+                    mlPredictions = {...predictions};
+
                     // Update sliders with ML predictions
                     for (const [paramId, value] of Object.entries(predictions)) {
                         if (currentParameters.hasOwnProperty(paramId)) {
@@ -820,6 +824,8 @@
 
                     showNotification('✨ ML צפה ערכים! בדוק והתאם לפי הצורך', 'success');
                 } else {
+                    // No ML predictions - user will enter manually
+                    mlPredictions = null;
                     showNotification('⚠️ ML נכשל - התאם ידנית', 'warning');
                 }
 
@@ -876,14 +882,34 @@
                 return;
             }
 
-            // NOW save the annotation with current parameter values
+            // Check if user corrected ML predictions
+            let userCorrected = false;
+            let corrections = {};
+
+            if (mlPredictions) {
+                // Compare current values vs ML predictions
+                for (const [paramId, mlValue] of Object.entries(mlPredictions)) {
+                    const userValue = currentParameters[paramId];
+                    if (userValue !== undefined && Math.abs(userValue - mlValue) > 0.1) {
+                        userCorrected = true;
+                        corrections[paramId] = userValue - mlValue;  // Difference
+                    }
+                }
+            }
+
+            // Save annotation with ML metadata
             annotations.push({
                 ...pendingBox,
-                parameters: {...currentParameters}
+                parameters: {...currentParameters},
+                ml_predictions: mlPredictions ? {...mlPredictions} : null,
+                user_corrected: userCorrected,
+                corrections: Object.keys(corrections).length > 0 ? corrections : null,
+                correction_timestamp: new Date().toISOString()
             });
 
-            // Clear pending box
+            // Clear pending box and ML predictions
             pendingBox = null;
+            mlPredictions = null;
 
             // Hide add button
             document.getElementById('addAnnotationBtn').style.display = 'none';
@@ -892,7 +918,13 @@
             loadParameters(selectedProduct);
 
             drawImage();
-            showNotification(`✅ נשמר! סה"כ ${annotations.length} תיוגים. ניתן לצייר עוד`, 'success');
+
+            // Show different message if user corrected
+            if (userCorrected) {
+                showNotification(`✅ נשמר עם תיקונים! סה"כ ${annotations.length} תיוגים`, 'success');
+            } else {
+                showNotification(`✅ נשמר! סה"כ ${annotations.length} תיוגים`, 'success');
+            }
         }
 
         function clearCanvas() {
