@@ -406,7 +406,6 @@
         let isDrawing = false;
         let annotations = [];
         let pendingBox = null;
-        let mlPredictions = null;  // Store ML predictions for comparison
         let startX, startY;
 
         const categories = ['avocado', 'mango', 'cucumber', 'apple', 'tomato', 'chicken_breast'];
@@ -448,13 +447,6 @@
                 });
 
                 console.log('Parameters loaded:', PARAMETERS);
-
-                // Enable category buttons now that parameters are ready
-                document.querySelectorAll('.category-btn').forEach(btn => {
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                });
-
                 showNotification('✅ פרמטרים נטענו בהצלחה', 'success');
 
             } catch (error) {
@@ -470,9 +462,6 @@
             const categoryBtns = document.querySelectorAll('.category-btn');
             categoryBtns.forEach(btn => {
                 btn.addEventListener('click', () => selectCategory(btn));
-                // Disable until parameters load
-                btn.disabled = true;
-                btn.style.opacity = '0.5';
             });
 
             canvas.addEventListener('mousedown', startDrawing);
@@ -736,32 +725,6 @@
             ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
         }
 
-        async function getMLPredictions(x, y, width, height) {
-            try {
-                // Create temporary canvas to extract crop
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = width;
-                tempCanvas.height = height;
-                const tempCtx = tempCanvas.getContext('2d');
-
-                // Draw cropped region
-                tempCtx.drawImage(canvas, x, y, width, height, 0, 0, width, height);
-
-                // Convert to base64
-                const imageBase64 = tempCanvas.toDataURL('image/jpeg', 0.9);
-
-                // For now, skip ML and let user enter manually
-                // TODO: Fix Gradio API integration
-                mlPredictions = null;
-                showNotification('⚠️ ML זמנית מושבת - התאם ידנית', 'warning');
-                return;
-
-            } catch (error) {
-                console.error('ML prediction error:', error);
-                mlPredictions = null;
-                showNotification('⚠️ ML לא זמין - התאם ידנית', 'warning');
-            }
-        }
 
         function endDrawing(e) {
             if (!isDrawing) return;
@@ -797,10 +760,7 @@
                 // Draw the box temporarily
                 drawImage();
 
-                showNotification('🔮 מנתח תמונה באמצעות ML...', 'info');
-
-                // Get ML predictions for this crop
-                getMLPredictions(x, y, width, height);
+                showNotification('✅ צייר תיבה - התאם פרמטרים ולחץ "הוסף אנוטציה"', 'success');
             }
         }
 
@@ -810,34 +770,14 @@
                 return;
             }
 
-            // Check if user corrected ML predictions
-            let userCorrected = false;
-            let corrections = {};
-
-            if (mlPredictions) {
-                // Compare current values vs ML predictions
-                for (const [paramId, mlValue] of Object.entries(mlPredictions)) {
-                    const userValue = currentParameters[paramId];
-                    if (userValue !== undefined && Math.abs(userValue - mlValue) > 0.1) {
-                        userCorrected = true;
-                        corrections[paramId] = userValue - mlValue;  // Difference
-                    }
-                }
-            }
-
-            // Save annotation with ML metadata
+            // Save annotation
             annotations.push({
                 ...pendingBox,
-                parameters: {...currentParameters},
-                ml_predictions: mlPredictions ? {...mlPredictions} : null,
-                user_corrected: userCorrected,
-                corrections: Object.keys(corrections).length > 0 ? corrections : null,
-                correction_timestamp: new Date().toISOString()
+                parameters: {...currentParameters}
             });
 
-            // Clear pending box and ML predictions
+            // Clear pending box
             pendingBox = null;
-            mlPredictions = null;
 
             // Hide add button
             document.getElementById('addAnnotationBtn').style.display = 'none';
@@ -847,12 +787,7 @@
 
             drawImage();
 
-            // Show different message if user corrected
-            if (userCorrected) {
-                showNotification(`✅ נשמר עם תיקונים! סה"כ ${annotations.length} תיוגים`, 'success');
-            } else {
-                showNotification(`✅ נשמר! סה"כ ${annotations.length} תיוגים`, 'success');
-            }
+            showNotification(`✅ נשמר! סה"כ ${annotations.length} תיוגים`, 'success');
         }
 
         function clearCanvas() {
