@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥑 YOLO Dataset Creator</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2.38.0/dist/umd/supabase.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        .header {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+        
+        h1 { font-size: 2em; margin-bottom: 10px; }
+        
+        .login-section {
+            background: rgba(255,255,255,0.15);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .user-input {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            margin: 10px;
+            min-width: 200px;
+            text-align: center;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            color: white;
+            margin: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+        
+        .btn:hover { transform: translateY(-2px); }
+        
+        .main-content { display: none; }
+        
+        .upload-zone {
+            border: 2px dashed rgba(255,255,255,0.5);
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .category-btn {
+            padding: 15px 10px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid transparent;
+        }
+        
+        .category-btn.selected {
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            border-color: white;
+        }
+        
+        .canvas-container { text-align: center; margin: 20px 0; }
+        
+        #imageCanvas {
+            border-radius: 15px;
+            max-width: 100%;
+            max-height: 60vh;
+            cursor: crosshair;
+        }
+        
+        .quality-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .quality-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .rating-btn {
+            width: 42px;
+            height: 42px;
+            border: 2px solid white;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .rating-btn.selected {
+            background: #ffd700;
+            color: #333;
+            border-color: #ffd700;
+            transform: scale(1.2);
+        }
+        
+        .rating-text {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #ffd700;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .btn-success { background: linear-gradient(45deg, #56ab2f, #a8e6cf); }
+        .btn-danger { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
+        .btn-primary { background: linear-gradient(45deg, #667eea, #764ba2); }
+        
+        .hidden { display: none !important; }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            max-width: 300px;
+        }
+        
+        .notification.show { transform: translateX(0); }
+        .notification.success { background: linear-gradient(45deg, #56ab2f, #a8e6cf); }
+        .notification.error { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
+        
+        .status-bar {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .status-bar.connected { background: rgba(76, 175, 80, 0.3); }
+        .status-bar.offline { background: rgba(244, 67, 54, 0.3); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🥑 YOLO Dataset Creator</h1>
+            <p>אוסף תמונות משותף לאימון מודל זיהוי</p>
+        </div>
+        
+        <!-- Status Bar -->
+        <div id="statusBar" class="status-bar connected">
+            <span id="statusText">✅ מחובר למסד נתונים משותף</span>
+        </div>
+        
+        <div id="loginSection" class="login-section">
+            <h2>🚀 בוא נתחיל!</h2>
+            <p><strong>הכנס את השם שלך באנגלית בלבד</strong></p>
+            <p style="font-size: 0.9em; color: #ffeb3b; margin: 10px 0;">⚠️ רק אותיות אנגליות! דוגמה: Uri, Dan, Maya, Alex</p>
+            <input type="text" id="userName" class="user-input" placeholder="Your name in English only" maxlength="15">
+            <br>
+            <button onclick="login()" class="btn">התחל לתרום</button>
+        </div>
+        
+        <div id="mainApp" class="main-content">
+            <div class="login-section">
+                <p>שלום <strong id="currentUser"></strong>! 👋</p>
+                <button onclick="logout()" class="btn btn-danger">התנתק</button>
+            </div>
+            
+            <div>
+                <h3>העלאת תמונה חדשה</h3>
+                
+                <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
+                    <h3>📷 צלם או העלה תמונה</h3>
+                    <p>לחץ כאן או גרור תמונה</p>
+                    <input type="file" id="imageInput" accept="image/*" capture="environment" style="display:none">
+                </div>
+                
+                <div id="categorySection" class="hidden">
+                    <h3>בחר את סוג המוצר:</h3>
+                    <div class="categories">
+                        <button class="category-btn" data-category="0">🥑 אבוקדו</button>
+                        <button class="category-btn" data-category="1">🥭 מנגו</button>
+                        <button class="category-btn" data-category="2">🥒 מלפפון</button>
+                        <button class="category-btn" data-category="3">🍎 תפוח</button>
+                        <button class="category-btn" data-category="4">🍅 עגבניה</button>
+                        <button class="category-btn" data-category="5">🍗 חזה עוף</button>
+                    </div>
+                </div>
+                
+                <div id="canvasSection" class="hidden">
+                    <div class="canvas-container">
+                        <canvas id="imageCanvas"></canvas>
+                    </div>
+                    
+                    <p><strong>הוראות:</strong> בחר קטגוריה ואז לחץ וגרור על התמונה ליצירת ריבוע סביב המוצר</p>
+                    
+                    <div class="quality-section">
+                        <h4>⭐ דרג את איכות המוצר:</h4>
+                        <div class="quality-buttons">
+                            <button class="rating-btn" onclick="setRating(0)">0</button>
+                            <button class="rating-btn" onclick="setRating(1)">1</button>
+                            <button class="rating-btn" onclick="setRating(2)">2</button>
+                            <button class="rating-btn" onclick="setRating(3)">3</button>
+                            <button class="rating-btn" onclick="setRating(4)">4</button>
+                            <button class="rating-btn" onclick="setRating(5)">5</button>
+                            <button class="rating-btn" onclick="setRating(6)">6</button>
+                            <button class="rating-btn selected" onclick="setRating(7)">7</button>
+                            <button class="rating-btn" onclick="setRating(8)">8</button>
+                            <button class="rating-btn" onclick="setRating(9)">9</button>
+                            <button class="rating-btn" onclick="setRating(10)">10</button>
+                        </div>
+                        <div class="rating-text" id="ratingText">ציון: 7 - טוב</div>
+                    </div>
+                    
+                    <div class="controls">
+                        <button onclick="saveAnnotation()" class="btn btn-success">💾 שמור</button>
+                        <button onclick="clearCanvas()" class="btn btn-danger">🗑️ נקה</button>
+                        <button onclick="resetUpload()" class="btn btn-primary">🔄 תמונה חדשה</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const SUPABASE_URL = 'https://kwoiohzrzmwkxkihkogb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3b2lvaHpyem13a3hraWhrb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4Mzk2MjIsImV4cCI6MjA3MjQxNTYyMn0.FK1zrvXNc-nmoV28Nr4K12MuwC_zAe5QPcZmwDSbCfw';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentUser = '';
+        let currentImage = null;
+        let selectedCategory = null;
+        let selectedRating = 7;
+        let isDrawing = false;
+        let annotations = [];
+        let startX, startY;
+        
+        const categories = ['avocado', 'mango', 'cucumber', 'apple', 'tomato', 'chicken_breast'];
+        const categoryNames = ['אבוקדו', 'מנגו', 'מלפפון', 'תפוח', 'עגבניה', 'חזה עוף'];
+        const ratingTexts = {
+            0: 'גרוע מאוד', 1: 'גרוע', 2: 'גרוע', 3: 'גרוע',
+            4: 'בינוני', 5: 'בינוני', 6: 'בינוני',
+            7: 'טוב', 8: 'טוב', 9: 'מעולה', 10: 'מעולה'
+        };
+        
+        const canvas = document.getElementById('imageCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+        });
+        
+        function setRating(rating) {
+            selectedRating = rating;
+            
+            document.querySelectorAll('.rating-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            document.getElementById('ratingText').textContent = `ציון: ${rating} - ${ratingTexts[rating]}`;
+        }
+        
+        function initApp() {
+            const imageInput = document.getElementById('imageInput');
+            imageInput.addEventListener('change', handleImageUpload);
+            
+            const categoryBtns = document.querySelectorAll('.category-btn');
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', () => selectCategory(btn));
+            });
+            
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', drawBoundingBox);
+            canvas.addEventListener('mouseup', endDrawing);
+            
+            canvas.addEventListener('touchstart', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchend', handleTouch);
+            
+            checkExistingUser();
+        }
+        
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0] || e.changedTouches[0];
+            const mouseEvent = {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            };
+            
+            if (e.type === 'touchstart') startDrawing(mouseEvent);
+            if (e.type === 'touchmove') drawBoundingBox(mouseEvent);
+            if (e.type === 'touchend') endDrawing(mouseEvent);
+        }
+        
+        function checkExistingUser() {
+            const savedUser = localStorage.getItem('yolo_user');
+            if (savedUser) {
+                currentUser = savedUser;
+                document.getElementById('currentUser').textContent = currentUser;
+                showMainApp();
+            }
+        }
+        
+        function login() {
+            const userName = document.getElementById('userName').value.trim();
+            
+            // בדיקה 1: שם לא ריק
+            if (!userName) {
+                showNotification('❌ אנא הכנס שם', 'error');
+                return;
+            }
+            
+            // בדיקה 2: רק אותיות אנגליות (a-z, A-Z)
+            const englishOnlyRegex = /^[a-zA-Z]+$/;
+            if (!englishOnlyRegex.test(userName)) {
+                showNotification('❌ השם חייב להכיל רק אותיות אנגליות! (a-z, A-Z)', 'error');
+                document.getElementById('userName').style.borderColor = 'red';
+                setTimeout(() => {
+                    document.getElementById('userName').style.borderColor = '';
+                }, 3000);
+                return;
+            }
+            
+            // בדיקה 3: אורך מינימום
+            if (userName.length < 2) {
+                showNotification('❌ השם קצר מדי (מינימום 2 אותיות)', 'error');
+                return;
+            }
+            
+            // בדיקה 4: אורך מקסימום
+            if (userName.length > 15) {
+                showNotification('❌ השם ארוך מדי (מקסימום 15 אותיות)', 'error');
+                return;
+            }
+            
+            // השם תקין!
+            currentUser = userName;
+            localStorage.setItem('yolo_user', currentUser);
+            document.getElementById('currentUser').textContent = currentUser;
+            showNotification('✅ שם תקין! מתחיל...', 'success');
+            showMainApp();
+        }
+        
+        function logout() {
+            localStorage.removeItem('yolo_user');
+            currentUser = '';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('mainApp').style.display = 'none';
+            resetUpload();
+        }
+        
+        function showMainApp() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+        }
+        
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                loadImageFile(file);
+            }
+        }
+        
+        function loadImageFile(file) {
+            if (file.size > 10 * 1024 * 1024) {
+                showNotification('קובץ גדול מדי (מקסימום 10MB)', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    currentImage = img;
+                    setupCanvas();
+                    drawImage();
+                    document.getElementById('categorySection').classList.remove('hidden');
+                    document.getElementById('canvasSection').classList.remove('hidden');
+                    annotations = [];
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function setupCanvas() {
+            const maxWidth = Math.min(500, window.innerWidth - 40);
+            const maxHeight = 400;
+            
+            let width = currentImage.width;
+            let height = currentImage.height;
+            const aspectRatio = width / height;
+            
+            if (width > maxWidth) {
+                width = maxWidth;
+                height = width / aspectRatio;
+            }
+            
+            if (height > maxHeight) {
+                height = maxHeight;
+                width = height * aspectRatio;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+        }
+        
+        function drawImage() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+            
+            annotations.forEach(ann => {
+                ctx.strokeStyle = '#00ff00';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(ann.x, ann.y, ann.width, ann.height);
+                
+                ctx.fillStyle = '#00ff00';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText(categoryNames[ann.category], ann.x, ann.y - 5);
+            });
+        }
+        
+        function selectCategory(btn) {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedCategory = parseInt(btn.dataset.category);
+        }
+        
+        function startDrawing(e) {
+            if (selectedCategory === null) {
+                showNotification('בחר קטגוריה תחילה', 'error');
+                return;
+            }
+            
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            startX = e.clientX - rect.left;
+            startY = e.clientY - rect.top;
+        }
+        
+        function drawBoundingBox(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const currentX = e.clientX - rect.left;
+            const currentY = e.clientY - rect.top;
+            
+            drawImage();
+            
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
+        }
+        
+        function endDrawing(e) {
+            if (!isDrawing) return;
+            
+            isDrawing = false;
+            const rect = canvas.getBoundingClientRect();
+            const endX = e.clientX - rect.left;
+            const endY = e.clientY - rect.top;
+            
+            const x = Math.min(startX, endX);
+            const y = Math.min(startY, endY);
+            const width = Math.abs(endX - startX);
+            const height = Math.abs(endY - startY);
+            
+            if (width > 20 && height > 20) {
+                annotations.push({
+                    x: x, y: y, width: width, height: height,
+                    category: selectedCategory
+                });
+                drawImage();
+            }
+        }
+        
+        function clearCanvas() {
+            annotations = [];
+            drawImage();
+        }
+        
+        function resetUpload() {
+            currentImage = null;
+            selectedCategory = null;
+            selectedRating = 7;
+            annotations = [];
+            document.getElementById('categorySection').classList.add('hidden');
+            document.getElementById('canvasSection').classList.add('hidden');
+            document.getElementById('imageInput').value = '';
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+            
+            document.querySelectorAll('.rating-btn').forEach(btn => btn.classList.remove('selected'));
+            document.querySelector('.rating-btn[onclick="setRating(7)"]').classList.add('selected');
+            document.getElementById('ratingText').textContent = 'ציון: 7 - טוב';
+        }
+        
+        async function saveAnnotation() {
+            if (!currentImage || annotations.length === 0) {
+                showNotification('אין אנוטציות לשמור', 'error');
+                return;
+            }
+            
+            try {
+                showNotification('שומר...', 'success');
+                
+                const blob = await new Promise(resolve => {
+                    canvas.toBlob(resolve, 'image/jpeg', 0.8);
+                });
+                
+                // שם קובץ פשוט עם שם המשתמש באנגלית
+                const fileName = `${Date.now()}_${currentUser.toLowerCase()}.jpg`;
+                
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('images')
+                    .upload(fileName, blob);
+                
+                if (uploadError) {
+                    throw new Error(`Upload failed: ${uploadError.message}`);
+                }
+                
+                const yoloAnnotations = annotations.map(ann => ({
+                    category: ann.category,
+                    center_x: (ann.x + ann.width / 2) / canvas.width,
+                    center_y: (ann.y + ann.height / 2) / canvas.height,
+                    width: ann.width / canvas.width,
+                    height: ann.height / canvas.height
+                }));
+                
+                const { data, error } = await supabase
+                    .from('annotations')
+                    .insert([{
+                        user_name: currentUser,
+                        image_path: fileName,
+                        annotations: yoloAnnotations,
+                        quality_rating: selectedRating,
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                if (error) {
+                    throw new Error(`Database save failed: ${error.message}`);
+                }
+                
+                showNotification(`נשמר בהצלחה! ${annotations.length} אובייקטים, ציון: ${selectedRating}/10`, 'success');
+                resetUpload();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification(`שגיאה: ${error.message}`, 'error');
+                
+                // גיבוי מקומי
+                saveLocally();
+            }
+        }
+        
+        function saveLocally() {
+            const localData = JSON.parse(localStorage.getItem('yolo_dataset') || '[]');
+            
+            const yoloAnnotations = annotations.map(ann => ({
+                category: ann.category,
+                center_x: (ann.x + ann.width / 2) / canvas.width,
+                center_y: (ann.y + ann.height / 2) / canvas.height,
+                width: ann.width / canvas.width,
+                height: ann.height / canvas.height
+            }));
+            
+            localData.push({
+                id: Date.now(),
+                user_name: currentUser,
+                annotations: yoloAnnotations,
+                quality_rating: selectedRating,
+                image_data: canvas.toDataURL('image/jpeg', 0.8),
+                created_at: new Date().toISOString()
+            });
+            
+            localStorage.setItem('yolo_dataset', JSON.stringify(localData));
+            showNotification('נשמר מקומית בטלפון', 'success');
+            resetUpload();
+        }
+        
+        function showNotification(message, type) {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification ' + type;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
