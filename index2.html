@@ -341,10 +341,20 @@ font-size: 1.2em;
 <div>
 <h3>העלאת תמונה חדשה</h3>
 
-<div class="upload-zone" onclick="document.getElementById('imageInput').click()">
-<h3>📷 צלם או העלה תמונה</h3>
-<p>לחץ כאן או גרור תמונה</p>
-<input type="file" id="imageInput" accept="image/*" capture="environment" style="display:none">
+<div class="upload-zone" id="uploadZone">
+<h3>📷 העלה תמונה</h3>
+<p>לחץ כאן, גרור תמונה או צלם חדשה</p>
+<input type="file" id="imageInput" accept="image/*" style="display:none">
+<input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none">
+</div>
+
+<div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+<button onclick="document.getElementById('imageInput').click()" class="btn" style="background: linear-gradient(45deg, #4CAF50, #45a049);">
+📁 בחר קובץ
+</button>
+<button onclick="document.getElementById('cameraInput').click()" class="btn" style="background: linear-gradient(45deg, #2196F3, #1976D2);">
+📷 צלם תמונה
+</button>
 </div>
 
 <div id="categorySection" class="hidden">
@@ -493,7 +503,49 @@ showNotification('שגיאה בטעינת פרמטרים', 'error');
 
 function initApp() {
 const imageInput = document.getElementById('imageInput');
+const cameraInput = document.getElementById('cameraInput');
+const uploadZone = document.getElementById('uploadZone');
+
+// File input change handlers
 imageInput.addEventListener('change', handleImageUpload);
+cameraInput.addEventListener('change', handleImageUpload);
+
+// Click to upload
+uploadZone.addEventListener('click', () => {
+imageInput.click();
+});
+
+// Drag and drop handlers
+uploadZone.addEventListener('dragover', (e) => {
+e.preventDefault();
+e.stopPropagation();
+uploadZone.style.borderColor = 'rgba(255,255,255,0.8)';
+uploadZone.style.background = 'rgba(255,255,255,0.1)';
+});
+
+uploadZone.addEventListener('dragleave', (e) => {
+e.preventDefault();
+e.stopPropagation();
+uploadZone.style.borderColor = 'rgba(255,255,255,0.5)';
+uploadZone.style.background = 'transparent';
+});
+
+uploadZone.addEventListener('drop', (e) => {
+e.preventDefault();
+e.stopPropagation();
+uploadZone.style.borderColor = 'rgba(255,255,255,0.5)';
+uploadZone.style.background = 'transparent';
+
+const files = e.dataTransfer.files;
+if (files.length > 0) {
+const file = files[0];
+if (file.type.startsWith('image/')) {
+loadImageFile(file);
+} else {
+showNotification('❌ אנא העלה קובץ תמונה', 'error');
+}
+}
+});
 
 const categoryBtns = document.querySelectorAll('.category-btn');
 categoryBtns.forEach(btn => {
