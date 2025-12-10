@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🥑 YOLO Dataset Creator - Manual Polygon</title>
+<script src="https://unpkg.com/@supabase/supabase-js@2.38.0/dist/umd/supabase.js"></script>
+<script type="module">
+    try {
+        const { client } = await import("https://cdn.jsdelivr.net/npm/@gradio/client/+esm");
+        window.gradioClient = client;
+        window.gradioClientLoaded = true;
+        console.log('✅ Gradio Client loaded successfully');
+    } catch (error) {
+        console.error('❌ Failed to load Gradio Client:', error);
+        window.gradioClientLoaded = false;
+        window.gradioClientError = error.message;
+    }
+</script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+font-family: Arial, sans-serif;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+min-height: 100vh;
+color: white;
+padding: 20px;
+}
+
+.container { max-width: 900px; margin: 0 auto; }
+
+.header {
+text-align: center;
+background: rgba(255,255,255,0.1);
+padding: 30px;
+border-radius: 20px;
+margin-bottom: 30px;
+}
+
+h1 { font-size: 2em; margin-bottom: 10px; }
+
+.login-section {
+background: rgba(255,255,255,0.15);
+padding: 25px;
+border-radius: 15px;
+text-align: center;
+margin: 20px 0;
+}
+
+.user-input {
+padding: 12px 20px;
+border: none;
+border-radius: 25px;
+font-size: 16px;
+margin: 10px;
+min-width: 200px;
+text-align: center;
+background: rgba(255,255,255,0.9);
+color: #333;
+}
+
+.btn {
+padding: 12px 25px;
+border: none;
+border-radius: 25px;
+cursor: pointer;
+font-weight: bold;
+font-size: 16px;
+color: white;
+margin: 10px;
+background: linear-gradient(45deg, #667eea, #764ba2);
+transition: transform 0.2s;
+}
+
+.btn:hover { transform: translateY(-2px); }
+
+.main-content { display: none; }
+
+.upload-zone {
+border: 2px dashed rgba(255,255,255,0.5);
+border-radius: 15px;
+padding: 40px 20px;
+text-align: center;
+margin: 20px 0;
+cursor: pointer;
+transition: all 0.3s;
+}
+
+.upload-zone:hover {
+border-color: rgba(255,255,255,0.8);
+background: rgba(255,255,255,0.05);
+}
+
+.categories {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+gap: 15px;
+margin: 20px 0;
+}
+
+.category-btn {
+padding: 15px 10px;
+border: none;
+border-radius: 15px;
+cursor: pointer;
+font-weight: bold;
+background: rgba(255,255,255,0.2);
+color: white;
+border: 2px solid transparent;
+transition: all 0.3s;
+}
+
+.category-btn:hover {
+background: rgba(255,255,255,0.3);
+transform: translateY(-2px);
+}
+
+.category-btn.selected {
+background: linear-gradient(45deg, #ff9a9e, #fecfef);
+border-color: white;
+box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+}
+
+.canvas-container {
+text-align: center;
+margin: 20px 0;
+position: relative;
+overflow: hidden;
+border-radius: 15px;
+background: #2a2a2a;
+}
+
+.canvas-wrapper {
+position: relative;
+display: inline-block;
+transform-origin: center center;
+transition: transform 0.2s ease-out;
+}
+
+#imageCanvas {
+border-radius: 15px;
+max-width: 100%;
+max-height: 60vh;
+cursor: crosshair;
+box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+display: block;
+}
+
+/* Polygon drawing mode */
+#imageCanvas.polygon-mode {
+cursor: cell;
+}
+
+/* Polygon Action Buttons - positioned dynamically near ellipse */
+.polygon-controls {
+position: absolute;
+display: none;
+gap: 10px;
+z-index: 20;
+background: rgba(0,0,0,0.8);
+padding: 10px 15px;
+border-radius: 50px;
+box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
+
+.polygon-controls.active {
+display: flex;
+}
+
+.polygon-btn {
+width: 50px;
+height: 50px;
+border-radius: 50%;
+border: 2px solid white;
+font-size: 24px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+cursor: pointer;
+transition: all 0.2s;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.polygon-btn:hover {
+transform: scale(1.1);
+box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+}
+
+.polygon-btn.accept {
+background: linear-gradient(45deg, #4CAF50, #45a049);
+color: white;
+width: 60px;
+height: 60px;
+font-size: 28px;
+}
+
+.polygon-btn.retry {
+background: linear-gradient(45deg, #ff9800, #f57c00);
+color: white;
+}
+
+.polygon-btn.undo {
+background: linear-gradient(45deg, #2196F3, #1976D2);
+color: white;
+}
+
+/* Zoom controls */
+.zoom-controls {
+position: absolute;
+top: 10px;
+left: 10px;
+display: none;
+flex-direction: column;
+gap: 5px;
+z-index: 10;
+}
+
+.zoom-controls.active {
+display: flex;
+}
+
+.zoom-btn {
+width: 40px;
+height: 40px;
+border-radius: 50%;
+border: none;
+background: rgba(255,255,255,0.9);
+font-size: 20px;
+cursor: pointer;
+box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+transition: all 0.2s;
+}
+
+.zoom-btn:hover {
+transform: scale(1.1);
+background: white;
+}
+
+/* Polygon info overlay */
+.polygon-info {
+position: absolute;
+top: 10px;
+right: 10px;
+background: rgba(0,0,0,0.7);
+color: white;
+padding: 10px 15px;
+border-radius: 8px;
+font-size: 14px;
+display: none;
+z-index: 10;
+}
+
+.polygon-info.active {
+display: block;
+}
+
+.parameters-section {
+background: rgba(255,255,255,0.1);
+border-radius: 15px;
+padding: 20px;
+margin: 20px 0;
+}
+
+.param-group {
+margin-bottom: 20px;
+}
+
+.param-group-header {
+font-size: 1.2em;
+font-weight: bold;
+margin-bottom: 15px;
+padding: 10px;
+background: rgba(255,255,255,0.15);
+border-radius: 10px;
+cursor: pointer;
+user-select: none;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.param-group-header:hover {
+background: rgba(255,255,255,0.2);
+}
+
+.toggle-icon {
+font-size: 1.5em;
+transition: transform 0.3s;
+}
+
+.toggle-icon.collapsed {
+transform: rotate(-90deg);
+}
+
+.param-group-content {
+max-height: 1000px;
+overflow: hidden;
+transition: max-height 0.3s ease;
+}
+
+.param-group-content.collapsed {
+max-height: 0;
+}
+
+.param-item {
+background: rgba(255,255,255,0.08);
+padding: 15px;
+border-radius: 10px;
+margin-bottom: 12px;
+}
+
+.param-label {
+display: flex;
+justify-content: space-between;
+margin-bottom: 8px;
+font-weight: bold;
+}
+
+.param-value {
+color: #ffd700;
+font-size: 1.1em;
+}
+
+.slider-container {
+position: relative;
+padding: 0 10px;
+}
+
+.slider-labels {
+display: flex;
+justify-content: space-between;
+font-size: 0.75em;
+color: rgba(255,255,255,0.7);
+margin-top: 4px;
+}
+
+.slider {
+width: 100%;
+height: 8px;
+border-radius: 5px;
+outline: none;
+-webkit-appearance: none;
+}
+
+.slider.linear {
+background: linear-gradient(to right, #ff4444, #ffaa00, #44ff44);
+}
+
+.slider.optimal {
+background: linear-gradient(to right, #ff4444, #ffaa00 25%, #44ff44 50%, #ffaa00 75%, #ff4444);
+}
+
+.slider.reversed {
+background: linear-gradient(to right, #44ff44, #ffaa00, #ff4444);
+}
+
+.slider::-webkit-slider-thumb {
+-webkit-appearance: none;
+appearance: none;
+width: 20px;
+height: 20px;
+border-radius: 50%;
+background: linear-gradient(45deg, #ffd700, #ffed4e);
+cursor: pointer;
+box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.slider::-moz-range-thumb {
+width: 20px;
+height: 20px;
+border-radius: 50%;
+background: linear-gradient(45deg, #ffd700, #ffed4e);
+cursor: pointer;
+border: none;
+box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.controls {
+display: flex;
+justify-content: center;
+gap: 10px;
+flex-wrap: wrap;
+margin: 20px 0;
+}
+
+.btn-success { background: linear-gradient(45deg, #56ab2f, #a8e6cf); }
+.btn-danger { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
+.btn-primary { background: linear-gradient(45deg, #667eea, #764ba2); }
+
+.hidden { display: none !important; }
+
+.notification {
+position: fixed;
+top: 20px;
+right: 20px;
+padding: 15px 25px;
+border-radius: 10px;
+color: white;
+font-weight: bold;
+z-index: 1000;
+transform: translateX(400px);
+transition: all 0.3s ease;
+max-width: 300px;
+box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.notification.show { transform: translateX(0); }
+.notification.success { background: linear-gradient(45deg, #56ab2f, #a8e6cf); }
+.notification.error { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
+
+.status-bar {
+padding: 15px;
+border-radius: 10px;
+margin: 20px 0;
+text-align: center;
+font-weight: bold;
+}
+
+.status-bar.connected { background: rgba(76, 175, 80, 0.3); }
+.status-bar.offline { background: rgba(244, 67, 54, 0.3); }
+
+.instructions {
+background: rgba(255,255,255,0.1);
+padding: 15px;
+border-radius: 10px;
+margin: 15px 0;
+text-align: center;
+}
+
+.loading {
+text-align: center;
+padding: 20px;
+font-size: 1.2em;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>🥑 YOLO Dataset Creator - Enhanced</h1>
+<p>אוסף תמונות משותף לאימון מודל זיהוי עם פרמטרים מתקדמים</p>
+</div>
+
+<div id="statusBar" class="status-bar connected">
+<span id="statusText">✅ מחובר למסד נתונים משותף</span>
+</div>
+
+<div id="loginSection" class="login-section">
+<h2>🚀 בוא נתחיל!</h2>
+<p><strong>הכנס את השם שלך באנגלית בלבד</strong></p>
+<p style="font-size: 0.9em; color: #ffeb3b; margin: 10px 0;">⚠️ רק אותיות אנגליות! דוגמה: Uri, Dan, Maya, Alex</p>
+<input type="text" id="userName" class="user-input" placeholder="Your name in English only" maxlength="15">
+<br>
+<button onclick="login()" class="btn">התחל לתרום</button>
+</div>
+
+<div id="mainApp" class="main-content">
+<div class="login-section">
+<p>שלום <strong id="currentUser"></strong>! 👋</p>
+<button onclick="logout()" class="btn btn-danger">התנתק</button>
+</div>
+
+<div>
+<h3>העלאת תמונה חדשה</h3>
+
+<div class="upload-zone" id="uploadZone">
+<h3>📷 העלה תמונה</h3>
+<p>לחץ כאן, גרור תמונה או צלם חדשה</p>
+<input type="file" id="imageInput" accept="image/*" style="display:none">
+<input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none">
+</div>
+
+<div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+<button onclick="document.getElementById('imageInput').click()" class="btn" style="background: linear-gradient(45deg, #4CAF50, #45a049);">
+📁 בחר קובץ
+</button>
+<button onclick="document.getElementById('cameraInput').click()" class="btn" style="background: linear-gradient(45deg, #2196F3, #1976D2);">
+📷 צלם תמונה
+</button>
+</div>
+
+<div id="categorySection" class="hidden">
+<h3>בחר את סוג המוצר:</h3>
+<div class="categories">
+<button class="category-btn" data-category="0" data-product="avocado">🥑 אבוקדו</button>
+<button class="category-btn" data-category="1" data-product="mango">🥭 מנגו</button>
+<button class="category-btn" data-category="2" data-product="cucumber">🥒 מלפפון</button>
+<button class="category-btn" data-category="3" data-product="apple">🍎 תפוח</button>
+<button class="category-btn" data-category="4" data-product="tomato">🍅 עגבניה</button>
+<button class="category-btn" data-category="5" data-product="chicken">🍗 חזה עוף</button>
+</div>
+</div>
+
+<div id="canvasSection" class="hidden">
+<div class="canvas-container">
+<div class="zoom-controls" id="zoomControls">
+<button class="zoom-btn" onclick="zoomIn()">+</button>
+<button class="zoom-btn" onclick="zoomOut()">−</button>
+<button class="zoom-btn" onclick="resetZoom()">⌂</button>
+</div>
+<div class="polygon-info" id="polygonInfo">
+<div>Points: <span id="pointCount">0</span></div>
+<div>Click to add • Double-click to close</div>
+</div>
+<div class="polygon-controls" id="polygonControls">
+<button class="polygon-btn undo" onclick="undoLastPoint()" title="Undo">↶</button>
+<button class="polygon-btn retry" onclick="retryPolygon()" title="Retry">🔄</button>
+<button class="polygon-btn accept" onclick="acceptPolygon()" title="Accept">✓</button>
+</div>
+<div class="canvas-wrapper" id="canvasWrapper">
+<canvas id="imageCanvas"></canvas>
+</div>
+</div>
+
+<div class="instructions">
+<strong>הוראות:</strong> בחר קטגוריה ואז לחץ וגרור על התמונה ליצירת ריבוע סביב המוצר
+</div>
+
+<div id="parametersSection" class="parameters-section hidden">
+<div id="loadingParams" class="loading">טוען פרמטרים...</div>
+
+<div id="paramsContent" class="hidden">
+<h3 style="text-align: center; margin-bottom: 20px;">⚙️ הגדר פרמטרים למוצר</h3>
+
+<div class="param-group">
+<div class="param-group-header" onclick="toggleGroup('visible')">
+<span>👁️ פרמטרים נראים למשתמש</span>
+<span class="toggle-icon" id="toggle-visible">▼</span>
+</div>
+<div class="param-group-content" id="visibleParams"></div>
+</div>
+
+<div class="param-group">
+<div class="param-group-header" onclick="toggleGroup('hidden')">
+<span>🔒 פרמטרים נסתרים/רצויים</span>
+<span class="toggle-icon" id="toggle-hidden">▼</span>
+</div>
+<div class="param-group-content" id="hiddenParams"></div>
+</div>
+</div>
+</div>
+
+<div class="controls">
+                        <button onclick="addCurrentAnnotation()" class="btn btn-warning" id="addAnnotationBtn" style="display:none;">
+                            ➕ הוסף למאגר זמני (<span id="annotationCount">0</span>)
+                        </button>
+                        <button onclick="saveAnnotation()" class="btn btn-success" id="saveAllBtn">
+                            💾 שמור <span id="saveCount">0</span> אנוטציות ל-Supabase
+                        </button>
+<button onclick="clearCanvas()" class="btn btn-danger">🗑️ נקה הכל</button>
+<button onclick="resetUpload()" class="btn btn-primary">🔄 תמונה חדשה</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://kwoiohzrzmwkxkihkogb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3b2lvaHpyem13a3hraWhrb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4Mzk2MjIsImV4cCI6MjA3MjQxNTYyMn0.FK1zrvXNc-nmoV28Nr4K12MuwC_zAe5QPcZmwDSbCfw';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// HuggingFace Space URL
+const HF_SPACE_URL = 'ankoru2025/Green';
+const HF_API_TOKEN = 'tZfqDUnRvLJbPwcbzq9CWrbPaLydUx6f';
+
+let PARAMETERS = {};
+let currentUser = '';
+let currentImage = null;
+let selectedCategory = null;
+let selectedProduct = null;
+let currentParameters = {};
+let isDrawing = false;
+let annotations = [];
+let pendingBox = null;
+let mlPredictions = null;  // Store ML predictions
+let startX, startY;
+
+// Polygon drawing state
+let isPolygonMode = false;
+let polygonPoints = [];
+let fittedEllipse = null;
+let isPolygonClosed = false;
+let polygonReadyForClicks = false; // Flag to prevent immediate click after rectangle
+
+// Zoom state
+let zoomLevel = 1;
+let zoomX = 0;
+let zoomY = 0;
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+
+const categories = ['avocado', 'mango', 'cucumber', 'apple', 'tomato', 'chicken_breast'];
+const categoryNames = ['אבוקדו', 'מנגו', 'מלפפון', 'תפוח', 'עגבניה', 'חזה עוף'];
+
+const canvas = document.getElementById('imageCanvas');
+const ctx = canvas.getContext('2d');
+
+document.addEventListener('DOMContentLoaded', function() {
+initApp();
+loadParametersFromSupabase();
+
+// Check Gradio Client availability after short delay (for ES module to load)
+setTimeout(() => {
+    if (!window.gradioClient) {
+        console.warn('⚠️ Gradio Client not available - ML predictions disabled');
+        const msg = window.gradioClientError
+            ? `ML לא זמין: ${window.gradioClientError}`
+            : 'ML לא זמין - התאם ידנית';
+        showNotification(msg, 'error');
+
+        // Alert on mobile
+        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+            alert('⚠️ ML features not available\n\nPossible reasons:\n- Old browser version\n- Network issues\n- ES modules not supported\n\nYou can still use the app by adjusting sliders manually.');
+        }
+    } else {
+        console.log('✅ ML ready');
+    }
+}, 2000);
+});
+
+async function loadParametersFromSupabase() {
+try {
+const { data, error } = await supabase
+.from('parameters')
+.select('*');
+
+if (error) throw error;
+
+PARAMETERS = {};
+
+data.forEach(row => {
+if (!PARAMETERS[row.product]) {
+PARAMETERS[row.product] = { visible: {}, hidden: {} };
+}
+
+PARAMETERS[row.product][row.param_type][row.param_id] = {
+name: row.param_name,
+min: row.min_value,
+max: row.max_value,
+default: row.default_value,
+step: row.step_value,
+gradient_class: row.gradient_class || 'linear',
+left_label: row.left_label || 'גרוע',
+right_label: row.right_label || 'מושלם'
+};
+});
+
+console.log('Parameters loaded:', PARAMETERS);
+showNotification('✅ פרמטרים נטענו בהצלחה', 'success');
+
+} catch (error) {
+console.error('Error loading parameters:', error);
+showNotification('שגיאה בטעינת פרמטרים', 'error');
+}
+}
+
+function initApp() {
+const imageInput = document.getElementById('imageInput');
+const cameraInput = document.getElementById('cameraInput');
+const uploadZone = document.getElementById('uploadZone');
+
+// File input change handlers
+imageInput.addEventListener('change', handleImageUpload);
+cameraInput.addEventListener('change', handleImageUpload);
+
+// Click to upload
+uploadZone.addEventListener('click', () => {
+imageInput.click();
+});
+
+// Drag and drop handlers
+uploadZone.addEventListener('dragover', (e) => {
+e.preventDefault();
+e.stopPropagation();
+uploadZone.style.borderColor = 'rgba(255,255,255,0.8)';
+uploadZone.style.background = 'rgba(255,255,255,0.1)';
+});
+
+uploadZone.addEventListener('dragleave', (e) => {
+e.preventDefault();
+e.stopPropagation();
+uploadZone.style.borderColor = 'rgba(255,255,255,0.5)';
+uploadZone.style.background = 'transparent';
+});
+
+uploadZone.addEventListener('drop', (e) => {
+e.preventDefault();
+e.stopPropagation();
+uploadZone.style.borderColor = 'rgba(255,255,255,0.5)';
+uploadZone.style.background = 'transparent';
+
+const files = e.dataTransfer.files;
+if (files.length > 0) {
+const file = files[0];
+if (file.type.startsWith('image/')) {
+loadImageFile(file);
+} else {
+showNotification('❌ אנא העלה קובץ תמונה', 'error');
+}
+}
+});
+
+const categoryBtns = document.querySelectorAll('.category-btn');
+categoryBtns.forEach(btn => {
+btn.addEventListener('click', () => selectCategory(btn));
+});
+
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mousemove', drawBoundingBox);
+canvas.addEventListener('mouseup', endDrawing);
+
+canvas.addEventListener('touchstart', handleTouch);
+canvas.addEventListener('touchmove', handleTouch);
+canvas.addEventListener('touchend', handleTouch);
+
+// Initialize annotation counters
+updateAnnotationCounts();
+
+checkExistingUser();
+}
+
+function handleTouch(e) {
+e.preventDefault();
+const touch = e.touches[0] || e.changedTouches[0];
+const mouseEvent = {
+clientX: touch.clientX,
+clientY: touch.clientY
+};
+
+if (e.type === 'touchstart') startDrawing(mouseEvent);
+if (e.type === 'touchmove') drawBoundingBox(mouseEvent);
+if (e.type === 'touchend') endDrawing(mouseEvent);
+}
+
+function checkExistingUser() {
+const savedUser = localStorage.getItem('yolo_user');
+if (savedUser) {
+currentUser = savedUser;
+document.getElementById('currentUser').textContent = currentUser;
+showMainApp();
+}
+}
+
+function login() {
+const userName = document.getElementById('userName').value.trim();
+
+if (!userName) {
+showNotification('❌ אנא הכנס שם', 'error');
+return;
+}
+
+const englishOnlyRegex = /^[a-zA-Z]+$/;
+if (!englishOnlyRegex.test(userName)) {
+showNotification('❌ השם חייב להכיל רק אותיות אנגליות!', 'error');
+return;
+}
+
+if (userName.length < 2 || userName.length > 15) {
+showNotification('❌ השם חייב להיות בין 2-15 אותיות', 'error');
+return;
+}
+
+currentUser = userName;
+localStorage.setItem('yolo_user', currentUser);
+document.getElementById('currentUser').textContent = currentUser;
+showNotification('✅ שם תקין! מתחיל...', 'success');
+showMainApp();
+}
+
+function logout() {
+localStorage.removeItem('yolo_user');
+currentUser = '';
+document.getElementById('loginSection').style.display = 'block';
+document.getElementById('mainApp').style.display = 'none';
+resetUpload();
+}
+
+function showMainApp() {
+document.getElementById('loginSection').style.display = 'none';
+document.getElementById('mainApp').style.display = 'block';
+}
+
+function handleImageUpload(e) {
+const file = e.target.files[0];
+if (file) {
+loadImageFile(file);
+}
+}
+
+function loadImageFile(file) {
+if (file.size > 10 * 1024 * 1024) {
+showNotification('קובץ גדול מדי (מקסימום 10MB)', 'error');
+return;
+}
+
+const reader = new FileReader();
+reader.onload = function(e) {
+const img = new Image();
+img.onload = function() {
+currentImage = img;
+setupCanvas();
+drawImage();
+document.getElementById('categorySection').classList.remove('hidden');
+document.getElementById('canvasSection').classList.remove('hidden');
+annotations = [];
+};
+img.src = e.target.result;
+};
+reader.readAsDataURL(file);
+}
+
+function setupCanvas() {
+const maxWidth = Math.min(600, window.innerWidth - 40);
+const maxHeight = 500;
+
+let width = currentImage.width;
+let height = currentImage.height;
+const aspectRatio = width / height;
+
+if (width > maxWidth) {
+width = maxWidth;
+height = width / aspectRatio;
+}
+
+if (height > maxHeight) {
+height = maxHeight;
+width = height * aspectRatio;
+}
+
+canvas.width = width;
+canvas.height = height;
+}
+
+function drawImage() {
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+
+            // Draw saved annotations (green) - THIN lines, visual only
+annotations.forEach(ann => {
+ctx.strokeStyle = '#00ff00';
+ctx.lineWidth = 1;  // THIN LINE - visual feedback only, not saved
+ctx.strokeRect(ann.x, ann.y, ann.width, ann.height);
+
+ctx.fillStyle = '#00ff00';
+ctx.font = 'bold 14px Arial';
+ctx.fillText(categoryNames[ann.category], ann.x, ann.y - 5);
+});
+
+            // Draw pending box (yellow/orange - waiting for parameters) - THIN
+            if (pendingBox) {
+                ctx.strokeStyle = '#ffaa00';
+                ctx.lineWidth = 2;  // THIN LINE
+                ctx.setLineDash([10, 5]);
+                ctx.strokeRect(pendingBox.x, pendingBox.y, pendingBox.width, pendingBox.height);
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#ffaa00';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText(categoryNames[pendingBox.category] + ' (המתן...)', pendingBox.x, pendingBox.y - 5);
+            }
+}
+
+function selectCategory(btn) {
+document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+btn.classList.add('selected');
+selectedCategory = parseInt(btn.dataset.category);
+selectedProduct = btn.dataset.product;
+
+// Load parameters (section will be shown when ML predictions complete)
+loadParameters(selectedProduct, false);
+}
+
+function loadParameters(product, showSection = true) {
+const params = PARAMETERS[product];
+if (!params) {
+showNotification('פרמטרים עדיין נטענים...', 'error');
+return;
+}
+
+currentParameters = {};
+
+// Only show parameters section if explicitly requested
+if (showSection) {
+    document.getElementById('parametersSection').classList.remove('hidden');
+}
+document.getElementById('loadingParams').classList.add('hidden');
+document.getElementById('paramsContent').classList.remove('hidden');
+
+const visibleContainer = document.getElementById('visibleParams');
+const hiddenContainer = document.getElementById('hiddenParams');
+
+visibleContainer.innerHTML = '';
+hiddenContainer.innerHTML = '';
+
+Object.entries(params.visible).forEach(([id, paramData]) => {
+createParameterSlider(visibleContainer, id, paramData, 'visible');
+});
+
+Object.entries(params.hidden).forEach(([id, paramData]) => {
+createParameterSlider(hiddenContainer, id, paramData, 'hidden');
+});
+}
+
+function createParameterSlider(container, id, paramData, type) {
+const paramItem = document.createElement('div');
+paramItem.className = 'param-item';
+
+const defaultValue = paramData.default;
+currentParameters[id] = defaultValue;
+
+const gradientClass = paramData.gradient_class || 'linear';
+const leftLabel = paramData.left_label || 'גרוע';
+const rightLabel = paramData.right_label || 'מושלם';
+
+paramItem.innerHTML = `
+               <div class="param-label">
+                   <span>${paramData.name}</span>
+                   <span class="param-value" id="value-${id}">${defaultValue.toFixed(1)}</span>
+               </div>
+               <div class="slider-container">
+                   <input type="range" class="slider ${gradientClass}" id="slider-${id}"
+                          min="${paramData.min}" max="${paramData.max}"
+                          step="${paramData.step}" value="${defaultValue}">
+                   <div class="slider-labels">
+                       <span>${leftLabel}</span>
+                       <span>${rightLabel}</span>
+                   </div>
+               </div>
+           `;
+
+container.appendChild(paramItem);
+
+const slider = document.getElementById(`slider-${id}`);
+slider.addEventListener('input', function(e) {
+const value = parseFloat(e.target.value);
+currentParameters[id] = value;
+document.getElementById(`value-${id}`).textContent = value.toFixed(1);
+});
+}
+
+function toggleGroup(groupName) {
+const content = document.getElementById(`${groupName}Params`);
+const icon = document.getElementById(`toggle-${groupName}`);
+
+content.classList.toggle('collapsed');
+icon.classList.toggle('collapsed');
+}
+
+function startDrawing(e) {
+if (selectedCategory === null) {
+showNotification('בחר קטגוריה תחילה', 'error');
+return;
+}
+
+isDrawing = true;
+const rect = canvas.getBoundingClientRect();
+startX = e.clientX - rect.left;
+startY = e.clientY - rect.top;
+}
+
+function drawBoundingBox(e) {
+if (!isDrawing) return;
+
+const rect = canvas.getBoundingClientRect();
+const currentX = e.clientX - rect.left;
+const currentY = e.clientY - rect.top;
+
+drawImage();
+
+ctx.strokeStyle = '#ff0000';
+ctx.lineWidth = 2;
+ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
+}
+
+async function getMLPredictions(x, y, width, height) {
+    try {
+        showNotification('🔮 מנתח תמונה...', 'info');
+
+        // Check if gradioClient is loaded
+        if (!window.gradioClient) {
+            const reason = window.gradioClientError || 'Unknown';
+            throw new Error(`Gradio Client not loaded: ${reason}`);
+        }
+
+        // Extract cropped image as blob
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = width;
+        tempCanvas.height = height;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(canvas, x, y, width, height, 0, 0, width, height);
+
+        const blob = await new Promise(resolve => tempCanvas.toBlob(resolve, 'image/jpeg', 0.9));
+
+        console.log('🔍 Connecting to HF Space:', HF_SPACE_URL);
+
+        // Use Gradio Client with timeout
+        const app = await Promise.race([
+            window.gradioClient(HF_SPACE_URL),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Connection timeout')), 15000))
+        ]);
+
+        console.log('🔍 Client connected. Checking endpoints...');
+
+        // Try using index 0 (first button/endpoint)
+        const result = await Promise.race([
+            app.predict(0, [blob, HF_API_TOKEN]),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Prediction timeout')), 20000))
+        ]);
+
+        console.log('🔍 Result:', result);
+        console.log('🔍 Result.data[2]:', result.data[2]);
+
+        // The JSON output is already parsed as object
+        const predictions = result.data[2];
+        console.log('🔍 Predictions:', predictions);
+
+        // Store and fill sliders
+        mlPredictions = {...predictions.visible_params, ...predictions.hidden_params};
+
+        Object.entries(mlPredictions).forEach(([paramId, value]) => {
+            currentParameters[paramId] = value;
+            const slider = document.getElementById(`slider-${paramId}`);
+            const valueDisplay = document.getElementById(`value-${paramId}`);
+            if (slider && valueDisplay) {
+                slider.value = value;
+                valueDisplay.textContent = value.toFixed(1);
+            }
+        });
+
+        // Show parameters section immediately (like index2)
+        document.getElementById('parametersSection').classList.remove('hidden');
+
+        showNotification('✨ ML צפה! תקן אם צריך', 'success');
+
+    } catch (error) {
+        console.error('❌ ML error:', error);
+        mlPredictions = null;
+
+        // More detailed error message
+        let errorMsg = '⚠️ ML לא זמין';
+        if (error.message.includes('gradioClient')) {
+            errorMsg += ' (ספרייה לא נטענה)';
+        } else if (error.message.includes('timeout')) {
+            errorMsg += ' (זמן חיבור)';
+        } else if (error.message.includes('network')) {
+            errorMsg += ' (בעיית רשת)';
+        }
+        errorMsg += ' - התאם ידנית';
+
+        showNotification(errorMsg, 'error');
+
+        // Show parameters section even if ML failed (like index2)
+        document.getElementById('parametersSection').classList.remove('hidden');
+
+        // Alert on mobile for easier debugging
+        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+            setTimeout(() => {
+                alert(`ML Error: ${error.message}\n\nPlease adjust sliders manually.`);
+            }, 500);
+        }
+    }
+}
+
+function endDrawing(e) {
+if (!isDrawing) return;
+
+            // If there's already a pending box, warn user
+            if (pendingBox) {
+                showNotification('⚠️ שמור את האנוטציה הנוכחית לפני ציור חדש', 'error');
+                isDrawing = false;
+                return;
+            }
+
+isDrawing = false;
+const rect = canvas.getBoundingClientRect();
+const endX = e.clientX - rect.left;
+const endY = e.clientY - rect.top;
+
+const x = Math.min(startX, endX);
+const y = Math.min(startY, endY);
+const width = Math.abs(endX - startX);
+const height = Math.abs(endY - startY);
+
+if (width > 20 && height > 20) {
+                // Store pending box - DON'T save parameters yet!
+                pendingBox = {
+                    x: x,
+                    y: y,
+                    width: width,
+                    height: height,
+                    category: selectedCategory,
+                    product: selectedProduct
+                };
+
+                // Show the "Add Annotation" button (like index2)
+                document.getElementById('addAnnotationBtn').style.display = 'inline-block';
+
+                // Draw the box temporarily
+                drawImage();
+
+                // Get ML predictions - this will show sliders immediately (like index2)
+                getMLPredictions(x, y, width, height);
+
+                // ALSO enter polygon tracing mode for optional refinement
+                enterPolygonMode(x, y, width, height);
+}
+}
+
+        function updateAnnotationCounts() {
+            const count = annotations.length;
+            document.getElementById('annotationCount').textContent = count;
+            document.getElementById('saveCount').textContent = count;
+
+            // Disable/enable save button based on count
+            const saveBtn = document.getElementById('saveAllBtn');
+            if (count === 0) {
+                saveBtn.disabled = true;
+                saveBtn.style.opacity = '0.5';
+                saveBtn.style.cursor = 'not-allowed';
+            } else {
+                saveBtn.disabled = false;
+                saveBtn.style.opacity = '1';
+                saveBtn.style.cursor = 'pointer';
+            }
+        }
+
+        function addCurrentAnnotation() {
+            if (!pendingBox) {
+                showNotification('⚠️ לא נמצאה אנוטציה ממתינה', 'error');
+                return;
+            }
+
+            // Check if user corrected ML
+            let userCorrected = false;
+            let corrections = {};
+
+            if (mlPredictions) {
+                for (const [paramId, mlValue] of Object.entries(mlPredictions)) {
+                    const userValue = currentParameters[paramId];
+                    if (userValue !== undefined && Math.abs(userValue - mlValue) > 0.1) {
+                        userCorrected = true;
+                        corrections[paramId] = userValue - mlValue;
+                    }
+                }
+            }
+
+            // Save with ML metadata
+            annotations.push({
+                ...pendingBox,
+                parameters: {...currentParameters},
+                ml_predictions: mlPredictions ? {...mlPredictions} : null,
+                user_corrected: userCorrected,
+                corrections: Object.keys(corrections).length > 0 ? corrections : null
+            });
+
+            // Clear
+            pendingBox = null;
+            mlPredictions = null;
+
+            // Hide add button
+            document.getElementById('addAnnotationBtn').style.display = 'none';
+
+            // Reset parameters (keep section visible for next annotation - like index2)
+            loadParameters(selectedProduct);
+
+            // Update annotation counters
+            updateAnnotationCounts();
+
+            // Ensure we're in rectangle drawing mode and zoomed out
+            if (isPolygonMode) {
+                exitPolygonMode();
+            }
+
+            drawImage();
+
+            const msg = userCorrected ?
+                `✅ נשמר עם תיקונים! סה"כ ${annotations.length}` :
+                `✅ נשמר! סה"כ ${annotations.length}`;
+            showNotification(msg, 'success');
+        }
+
+function clearCanvas() {
+annotations = [];
+            pendingBox = null;
+            mlPredictions = null;
+            document.getElementById('addAnnotationBtn').style.display = 'none';
+            updateAnnotationCounts();
+drawImage();
+            showNotification('נוקה', 'success');
+}
+
+function resetUpload() {
+currentImage = null;
+selectedCategory = null;
+selectedProduct = null;
+currentParameters = {};
+annotations = [];
+            pendingBox = null;
+            mlPredictions = null;
+            document.getElementById('addAnnotationBtn').style.display = 'none';
+            updateAnnotationCounts();
+document.getElementById('categorySection').classList.add('hidden');
+document.getElementById('canvasSection').classList.add('hidden');
+document.getElementById('parametersSection').classList.add('hidden');
+document.getElementById('loadingParams').classList.remove('hidden');
+document.getElementById('paramsContent').classList.add('hidden');
+document.getElementById('imageInput').value = '';
+document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+}
+
+async function saveAnnotation() {
+if (!currentImage || annotations.length === 0) {
+showNotification('אין אנוטציות לשמור', 'error');
+return;
+}
+
+try {
+showNotification('שומר...', 'success');
+
+// IMPORTANT: Save ORIGINAL image WITHOUT annotation lines
+// Create a temporary canvas with ONLY the original image
+const tempCanvas = document.createElement('canvas');
+tempCanvas.width = canvas.width;
+tempCanvas.height = canvas.height;
+const tempCtx = tempCanvas.getContext('2d');
+tempCtx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+
+const blob = await new Promise(resolve => {
+tempCanvas.toBlob(resolve, 'image/jpeg', 0.8);
+});
+
+const fileName = `${Date.now()}_${currentUser.toLowerCase()}.jpg`;
+
+const { data: uploadData, error: uploadError } = await supabase.storage
+.from('images')
+.upload(fileName, blob);
+
+if (uploadError) {
+throw new Error(`Upload failed: ${uploadError.message}`);
+}
+
+const yoloAnnotations = annotations.map(ann => ({
+category: ann.category,
+product: ann.product,
+center_x: (ann.x + ann.width / 2) / canvas.width,
+center_y: (ann.y + ann.height / 2) / canvas.height,
+width: ann.width / canvas.width,
+height: ann.height / canvas.height,
+parameters: ann.parameters
+}));
+
+const { data, error } = await supabase
+.from('annotations')
+.insert([{
+user_name: currentUser,
+image_path: fileName,
+annotations: yoloAnnotations,
+created_at: new Date().toISOString()
+}]);
+
+if (error) {
+throw new Error(`Database save failed: ${error.message}`);
+}
+
+showNotification(`✅ נשמר בהצלחה! ${annotations.length} אובייקטים`, 'success');
+resetUpload();
+
+} catch (error) {
+console.error('Error:', error);
+showNotification(`שגיאה: ${error.message}`, 'error');
+saveLocally();
+}
+}
+
+function saveLocally() {
+const localData = JSON.parse(localStorage.getItem('yolo_dataset') || '[]');
+
+const yoloAnnotations = annotations.map(ann => ({
+category: ann.category,
+product: ann.product,
+center_x: (ann.x + ann.width / 2) / canvas.width,
+center_y: (ann.y + ann.height / 2) / canvas.height,
+width: ann.width / canvas.width,
+height: ann.height / canvas.height,
+parameters: ann.parameters
+}));
+
+// Save ORIGINAL image WITHOUT annotation lines
+const tempCanvas = document.createElement('canvas');
+tempCanvas.width = canvas.width;
+tempCanvas.height = canvas.height;
+const tempCtx = tempCanvas.getContext('2d');
+tempCtx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+
+localData.push({
+id: Date.now(),
+user_name: currentUser,
+annotations: yoloAnnotations,
+image_data: tempCanvas.toDataURL('image/jpeg', 0.8),
+created_at: new Date().toISOString()
+});
+
+localStorage.setItem('yolo_dataset', JSON.stringify(localData));
+showNotification('💾 נשמר מקומית בטלפון', 'success');
+resetUpload();
+}
+
+function showNotification(message, type) {
+const existing = document.querySelector('.notification');
+if (existing) existing.remove();
+
+const notification = document.createElement('div');
+notification.className = 'notification ' + type;
+notification.textContent = message;
+document.body.appendChild(notification);
+
+setTimeout(() => notification.classList.add('show'), 100);
+
+setTimeout(() => {
+notification.classList.remove('show');
+setTimeout(() => notification.remove(), 300);
+}, 4000);
+}
+
+// ============================================
+// ZOOM FUNCTIONS
+// ============================================
+
+function zoomIn() {
+    zoomLevel = Math.min(zoomLevel * 1.5, 5);
+    applyZoom();
+}
+
+function zoomOut() {
+    zoomLevel = Math.max(zoomLevel / 1.5, 1);
+    applyZoom();
+}
+
+function resetZoom() {
+    zoomLevel = 1;
+    zoomX = 0;
+    zoomY = 0;
+    applyZoom();
+}
+
+function applyZoom() {
+    const wrapper = document.getElementById('canvasWrapper');
+    wrapper.style.transform = `translate(${zoomX}px, ${zoomY}px) scale(${zoomLevel})`;
+
+    // Reposition buttons if they're visible
+    if (isPolygonClosed && fittedEllipse) {
+        positionPolygonControls();
+    }
+}
+
+// Mouse wheel zoom
+canvas.addEventListener('wheel', (e) => {
+    if (!isPolygonMode) return;
+    e.preventDefault();
+
+    if (e.deltaY < 0) {
+        zoomIn();
+    } else {
+        zoomOut();
+    }
+});
+
+// ============================================
+// POLYGON DRAWING FUNCTIONS
+// ============================================
+
+function enterPolygonMode(x, y, width, height) {
+    isPolygonMode = true;
+    polygonPoints = []; // Start with EMPTY array - user will click to add first point
+    fittedEllipse = null;
+    isPolygonClosed = false;
+    polygonReadyForClicks = false; // NOT ready yet - prevent immediate clicks
+
+    // Auto-zoom to rectangle area
+    const padding = 50;
+    const rectCenterX = x + width / 2;
+    const rectCenterY = y + height / 2;
+
+    // Calculate zoom to fit rectangle nicely
+    const canvasWidth = canvas.width;
+    const canvasHeight = canvas.height;
+    const zoomX_factor = canvasWidth / (width + padding * 2);
+    const zoomY_factor = canvasHeight / (height + padding * 2);
+    zoomLevel = Math.min(zoomX_factor, zoomY_factor, 3);
+
+    // Center on rectangle
+    zoomX = (canvasWidth / 2 - rectCenterX) * zoomLevel;
+    zoomY = (canvasHeight / 2 - rectCenterY) * zoomLevel;
+
+    applyZoom();
+
+    // Show controls (but NOT polygon buttons yet - only after closing polygon)
+    document.getElementById('zoomControls').classList.add('active');
+    document.getElementById('polygonInfo').classList.add('active');
+    canvas.classList.add('polygon-mode');
+
+    // Remove rectangle drawing handlers, add polygon handlers
+    canvas.removeEventListener('mousedown', startDrawing);
+    canvas.removeEventListener('mousemove', drawBoundingBox);
+    canvas.removeEventListener('mouseup', endDrawing);
+
+    canvas.addEventListener('click', addPolygonPoint);
+    canvas.addEventListener('dblclick', closePolygon);
+
+    drawImage();
+
+    // Wait for zoom animation to complete, THEN allow polygon clicks
+    setTimeout(() => {
+        polygonReadyForClicks = true;
+        showNotification('🎯 Click to trace polygon (or skip and click Add button)', 'success');
+    }, 300); // 300ms delay to ensure rectangle drawing is complete and zoom is visible
+}
+
+function exitPolygonMode() {
+    isPolygonMode = false;
+    polygonPoints = [];
+    fittedEllipse = null;
+    isPolygonClosed = false;
+    polygonReadyForClicks = false;
+
+    // Reset zoom
+    resetZoom();
+
+    // Hide controls
+    document.getElementById('zoomControls').classList.remove('active');
+    document.getElementById('polygonInfo').classList.remove('active');
+    document.getElementById('polygonControls').classList.remove('active');
+    canvas.classList.remove('polygon-mode');
+
+    // Restore rectangle drawing handlers
+    canvas.removeEventListener('click', addPolygonPoint);
+    canvas.removeEventListener('dblclick', closePolygon);
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', drawBoundingBox);
+    canvas.addEventListener('mouseup', endDrawing);
+
+    drawImage();
+}
+
+function addPolygonPoint(e) {
+    if (!isPolygonMode || isPolygonClosed) return;
+
+    // WAIT for zoom to complete before accepting clicks
+    if (!polygonReadyForClicks) {
+        return; // Ignore clicks until ready
+    }
+
+    // Get canvas bounding rect (this includes the transform)
+    const rect = canvas.getBoundingClientRect();
+
+    // Calculate click position relative to canvas element
+    // rect.width/height are the DISPLAYED dimensions (after transform)
+    // canvas.width/height are the ACTUAL canvas dimensions
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    // Check if clicking near start point to close polygon
+    if (polygonPoints.length >= 3) {
+        const first = polygonPoints[0];
+        const dist = Math.sqrt((x - first.x) ** 2 + (y - first.y) ** 2);
+        if (dist < 15) {
+            closePolygon(e);
+            return;
+        }
+    }
+
+    polygonPoints.push({x, y});
+    document.getElementById('pointCount').textContent = polygonPoints.length;
+
+    drawImage();
+}
+
+function closePolygon(e) {
+    if (polygonPoints.length < 3) {
+        showNotification('Need at least 3 points', 'error');
+        return;
+    }
+
+    if (e) e.preventDefault();
+
+    isPolygonClosed = true;
+
+    // Fit ellipse to polygon
+    fittedEllipse = fitEllipseToPolygon(polygonPoints);
+
+    // Draw the ellipse FIRST
+    drawImage();
+
+    // Position buttons next to the ellipse and show them IMMEDIATELY
+    positionPolygonControls();
+    document.getElementById('polygonControls').classList.add('active');
+
+    showNotification('✓ Ellipse suggested! Accept ✓ or Retry 🔄', 'success');
+}
+
+function positionPolygonControls() {
+    if (!fittedEllipse) return;
+
+    const controls = document.getElementById('polygonControls');
+    const rect = canvas.getBoundingClientRect();
+    const wrapper = document.getElementById('canvasWrapper');
+    const wrapperRect = wrapper.getBoundingClientRect();
+
+    // Calculate position on the canvas
+    // Position to the right of the ellipse center
+    const offsetX = fittedEllipse.cx + fittedEllipse.rx + 30; // 30px to the right of ellipse
+    const offsetY = fittedEllipse.cy;
+
+    // Convert canvas coordinates to screen coordinates accounting for zoom
+    const screenX = wrapperRect.left - rect.left + offsetX * zoomLevel + zoomX;
+    const screenY = wrapperRect.top - rect.top + offsetY * zoomLevel + zoomY;
+
+    controls.style.left = `${screenX}px`;
+    controls.style.top = `${screenY}px`;
+    controls.style.transform = 'translateY(-50%)'; // Center vertically
+}
+
+function undoLastPoint() {
+    if (polygonPoints.length > 0 && !isPolygonClosed) {
+        polygonPoints.pop();
+        document.getElementById('pointCount').textContent = polygonPoints.length;
+        drawImage();
+    }
+}
+
+function retryPolygon() {
+    polygonPoints = [];
+    fittedEllipse = null;
+    isPolygonClosed = false;
+    polygonReadyForClicks = true; // Keep it ready since we're already zoomed
+    document.getElementById('pointCount').textContent = 0;
+
+    // Hide buttons when retrying
+    document.getElementById('polygonControls').classList.remove('active');
+
+    drawImage();
+    showNotification('Retry: Click to draw new polygon', 'success');
+}
+
+function acceptPolygon() {
+    if (!isPolygonClosed || !fittedEllipse) {
+        showNotification('Please close the polygon first', 'error');
+        return;
+    }
+
+    // Update pending box with ellipse parameters
+    if (pendingBox) {
+        pendingBox.ellipse = fittedEllipse;
+        pendingBox.polygon = [...polygonPoints];
+    }
+
+    // Exit polygon mode and continue with normal flow
+    exitPolygonMode();
+
+    // Parameters section is ALREADY shown (from endDrawing), no need to show again
+    // Add button is ALREADY shown
+
+    // Draw the result
+    drawImage();
+
+    showNotification('✓ Polygon accepted! Check parameters and click Add', 'success');
+}
+
+// ============================================
+// ELLIPSE FITTING ALGORITHM (Fitzgibbon Direct Least Squares)
+// ============================================
+
+function fitEllipseToPolygon(points) {
+    if (points.length < 5) {
+        // Need at least 5 points to fit ellipse
+        // Fall back to simple bbox ellipse
+        let minX = Infinity, maxX = -Infinity;
+        let minY = Infinity, maxY = -Infinity;
+        for (const p of points) {
+            minX = Math.min(minX, p.x);
+            maxX = Math.max(maxX, p.x);
+            minY = Math.min(minY, p.y);
+            maxY = Math.max(maxY, p.y);
+        }
+        return {
+            cx: (minX + maxX) / 2,
+            cy: (minY + maxY) / 2,
+            rx: (maxX - minX) / 2,
+            ry: (maxY - minY) / 2,
+            angle: 0
+        };
+    }
+
+    // Calculate center of mass
+    let cx = 0, cy = 0;
+    for (const p of points) {
+        cx += p.x;
+        cy += p.y;
+    }
+    cx /= points.length;
+    cy /= points.length;
+
+    // Simplified ellipse fitting:
+    // Calculate moments to get orientation and size
+    let mxx = 0, myy = 0, mxy = 0;
+    for (const p of points) {
+        const dx = p.x - cx;
+        const dy = p.y - cy;
+        mxx += dx * dx;
+        myy += dy * dy;
+        mxy += dx * dy;
+    }
+    mxx /= points.length;
+    myy /= points.length;
+    mxy /= points.length;
+
+    // Calculate angle
+    const angle = 0.5 * Math.atan2(2 * mxy, mxx - myy);
+
+    // Calculate semi-axes
+    const cos_a = Math.cos(angle);
+    const sin_a = Math.sin(angle);
+
+    let rx_sq = 0, ry_sq = 0;
+    for (const p of points) {
+        const dx = p.x - cx;
+        const dy = p.y - cy;
+        const dx_rot = dx * cos_a + dy * sin_a;
+        const dy_rot = -dx * sin_a + dy * cos_a;
+        rx_sq += dx_rot * dx_rot;
+        ry_sq += dy_rot * dy_rot;
+    }
+
+    const rx = Math.sqrt(rx_sq / points.length) * 2;
+    const ry = Math.sqrt(ry_sq / points.length) * 2;
+
+    // Scale down to fit INSIDE polygon (not outside) - avoid neighbors/background
+    const scaleFactor = 0.85;
+
+    return {
+        cx: cx,
+        cy: cy,
+        rx: Math.max(rx, ry) * scaleFactor,  // Semi-major axis (scaled to fit inside)
+        ry: Math.min(rx, ry) * scaleFactor,  // Semi-minor axis (scaled to fit inside)
+        angle: angle
+    };
+}
+
+// ============================================
+// MODIFIED DRAW IMAGE FUNCTION
+// ============================================
+
+// Override the existing drawImage to include polygon and ellipse drawing
+const originalDrawImage = drawImage;
+drawImage = function() {
+    originalDrawImage();
+
+    // Draw polygon if in polygon mode
+    if (isPolygonMode && polygonPoints.length > 0) {
+        ctx.save();
+        ctx.strokeStyle = '#00ff00';
+        ctx.lineWidth = 2;
+        ctx.fillStyle = 'rgba(0, 255, 0, 0.1)';
+
+        ctx.beginPath();
+        ctx.moveTo(polygonPoints[0].x, polygonPoints[0].y);
+        for (let i = 1; i < polygonPoints.length; i++) {
+            ctx.lineTo(polygonPoints[i].x, polygonPoints[i].y);
+        }
+
+        if (isPolygonClosed) {
+            ctx.closePath();
+            ctx.fill();
+        } else {
+            // Draw preview line to cursor or start
+            ctx.lineTo(polygonPoints[0].x, polygonPoints[0].y);
+            ctx.setLineDash([5, 5]);
+        }
+
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Draw points
+        ctx.fillStyle = '#00ff00';
+        for (const p of polygonPoints) {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        // Highlight start point
+        if (polygonPoints.length > 0) {
+            ctx.strokeStyle = '#ffff00';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(polygonPoints[0].x, polygonPoints[0].y, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+
+        ctx.restore();
+
+        // Draw fitted ellipse if closed - COMPLETELY BLOCKED INSIDE POLYGON
+        if (isPolygonClosed && fittedEllipse) {
+            ctx.save();
+
+            // Create clipping path from polygon to constrain ellipse INSIDE
+            ctx.beginPath();
+            ctx.moveTo(polygonPoints[0].x, polygonPoints[0].y);
+            for (let i = 1; i < polygonPoints.length; i++) {
+                ctx.lineTo(polygonPoints[i].x, polygonPoints[i].y);
+            }
+            ctx.closePath();
+            ctx.clip(); // Clip to polygon boundary - NOTHING can exceed this
+
+            // Draw ellipse - BOTH fill and outline will be clipped inside polygon
+            ctx.translate(fittedEllipse.cx, fittedEllipse.cy);
+            ctx.rotate(fittedEllipse.angle);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, fittedEllipse.rx, fittedEllipse.ry, 0, 0, 2 * Math.PI);
+
+            // Fill with dark background (clipped to polygon)
+            ctx.fillStyle = 'rgba(50, 50, 50, 0.7)';
+            ctx.fill();
+
+            // Stroke outline (ALSO clipped to polygon - won't exceed boundary)
+            ctx.strokeStyle = '#ff6600';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([10, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.restore(); // Remove clip
+        }
+    }
+};
+
+</script>
+</body>
+</html>
