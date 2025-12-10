@@ -403,10 +403,13 @@ font-size: 1.2em;
 </div>
 
 <div class="controls">
-                        <button onclick="saveAnnotation()" class="btn btn-success">💾 שמור</button>
-                        <button onclick="addCurrentAnnotation()" class="btn btn-warning" id="addAnnotationBtn" style="display:none;">➕ הוסף אנוטציה זו</button>
-                        <button onclick="saveAnnotation()" class="btn btn-success">💾 שמור הכל</button>
-<button onclick="clearCanvas()" class="btn btn-danger">🗑️ נקה</button>
+                        <button onclick="addCurrentAnnotation()" class="btn btn-warning" id="addAnnotationBtn" style="display:none;">
+                            ➕ הוסף למאגר זמני (<span id="annotationCount">0</span>)
+                        </button>
+                        <button onclick="saveAnnotation()" class="btn btn-success" id="saveAllBtn">
+                            💾 שמור <span id="saveCount">0</span> אנוטציות ל-Supabase
+                        </button>
+<button onclick="clearCanvas()" class="btn btn-danger">🗑️ נקה הכל</button>
 <button onclick="resetUpload()" class="btn btn-primary">🔄 תמונה חדשה</button>
 </div>
 </div>
@@ -559,6 +562,9 @@ canvas.addEventListener('mouseup', endDrawing);
 canvas.addEventListener('touchstart', handleTouch);
 canvas.addEventListener('touchmove', handleTouch);
 canvas.addEventListener('touchend', handleTouch);
+
+// Initialize annotation counters
+updateAnnotationCounts();
 
 checkExistingUser();
 }
@@ -937,6 +943,24 @@ if (width > 20 && height > 20) {
 }
 }
 
+        function updateAnnotationCounts() {
+            const count = annotations.length;
+            document.getElementById('annotationCount').textContent = count;
+            document.getElementById('saveCount').textContent = count;
+
+            // Disable/enable save button based on count
+            const saveBtn = document.getElementById('saveAllBtn');
+            if (count === 0) {
+                saveBtn.disabled = true;
+                saveBtn.style.opacity = '0.5';
+                saveBtn.style.cursor = 'not-allowed';
+            } else {
+                saveBtn.disabled = false;
+                saveBtn.style.opacity = '1';
+                saveBtn.style.cursor = 'pointer';
+            }
+        }
+
         function addCurrentAnnotation() {
             if (!pendingBox) {
                 showNotification('⚠️ לא נמצאה אנוטציה ממתינה', 'error');
@@ -976,6 +1000,9 @@ if (width > 20 && height > 20) {
             // Reset parameters
             loadParameters(selectedProduct);
 
+            // Update annotation counters
+            updateAnnotationCounts();
+
             drawImage();
 
             const msg = userCorrected ?
@@ -989,6 +1016,7 @@ annotations = [];
             pendingBox = null;
             mlPredictions = null;
             document.getElementById('addAnnotationBtn').style.display = 'none';
+            updateAnnotationCounts();
 drawImage();
             showNotification('נוקה', 'success');
 }
@@ -1002,6 +1030,7 @@ annotations = [];
             pendingBox = null;
             mlPredictions = null;
             document.getElementById('addAnnotationBtn').style.display = 'none';
+            updateAnnotationCounts();
 document.getElementById('categorySection').classList.add('hidden');
 document.getElementById('canvasSection').classList.add('hidden');
 document.getElementById('parametersSection').classList.add('hidden');
