@@ -94,17 +94,18 @@ background: rgba(255,255,255,0.05);
 
 .categories {
 display: grid;
-grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-gap: 15px;
+grid-template-columns: repeat(3, 1fr);
+gap: 10px;
 margin: 20px 0;
 }
 
 .category-btn {
-padding: 15px 10px;
+padding: 10px 8px;
 border: none;
-border-radius: 15px;
+border-radius: 10px;
 cursor: pointer;
 font-weight: bold;
+font-size: 14px;
 background: rgba(255,255,255,0.2);
 color: white;
 border: 2px solid transparent;
@@ -124,11 +125,15 @@ box-shadow: 0 4px 15px rgba(255,255,255,0.3);
 
 .canvas-container {
 text-align: center;
-margin: 20px 0;
+margin: 20px auto;
 position: relative;
-overflow: hidden;
+overflow: visible;
 border-radius: 15px;
 background: #2a2a2a;
+display: block;
+max-width: fit-content;
+margin-left: auto;
+margin-right: auto;
 }
 
 .canvas-wrapper {
@@ -152,16 +157,18 @@ display: block;
 cursor: cell;
 }
 
-/* Polygon Action Buttons - positioned dynamically near ellipse */
+/* Polygon Action Buttons - positioned directly touching below rectangle */
 .polygon-controls {
 position: absolute;
 display: none;
-gap: 10px;
+gap: 8px;
 z-index: 20;
 background: rgba(0,0,0,0.8);
-padding: 10px 15px;
+padding: 8px 12px;
 border-radius: 50px;
 box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+left: 50%;
+transform: translateX(-50%);
 }
 
 .polygon-controls.active {
@@ -169,11 +176,11 @@ display: flex;
 }
 
 .polygon-btn {
-width: 50px;
-height: 50px;
+width: 36px;
+height: 36px;
 border-radius: 50%;
 border: 2px solid white;
-font-size: 24px;
+font-size: 17px;
 box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 cursor: pointer;
 transition: all 0.2s;
@@ -190,9 +197,9 @@ box-shadow: 0 6px 16px rgba(0,0,0,0.6);
 .polygon-btn.accept {
 background: linear-gradient(45deg, #4CAF50, #45a049);
 color: white;
-width: 60px;
-height: 60px;
-font-size: 28px;
+width: 43px;
+height: 43px;
+font-size: 20px;
 }
 
 .polygon-btn.retry {
@@ -237,6 +244,29 @@ transform: scale(1.1);
 background: white;
 }
 
+/* Clear button - positioned next to image */
+.clear-btn {
+position: absolute;
+top: 10px;
+right: 10px;
+width: 50px;
+height: 50px;
+border-radius: 50%;
+border: none;
+background: linear-gradient(45deg, #ff416c, #ff4b2b);
+color: white;
+font-size: 24px;
+cursor: pointer;
+box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+z-index: 10;
+transition: all 0.2s;
+}
+
+.clear-btn:hover {
+transform: scale(1.1);
+box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+
 /* Polygon info overlay */
 .polygon-info {
 position: absolute;
@@ -255,11 +285,17 @@ z-index: 10;
 display: block;
 }
 
+/* ========== ORIGINAL PARAMETERS SECTION (NOW UNUSED) ========== */
+/* REVERSIBLE: Original styling - restore this if reverting */
 .parameters-section {
 background: rgba(255,255,255,0.1);
 border-radius: 15px;
 padding: 20px;
 margin: 20px 0;
+}
+/* When parameters are in left panel, hide the original section */
+.parameters-section.in-left-panel {
+display: none;
 }
 
 .param-group {
@@ -376,6 +412,208 @@ border: none;
 box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* ========== LAYOUT CHANGE: LEFT PANEL FOR SLIDERS ========== */
+/* LEFT side parameters panel - REVERSIBLE CHANGE START */
+.left-panel {
+position: absolute;
+left: -220px;
+top: 0;
+width: 210px;
+max-height: 600px;
+overflow-y: auto;
+overflow-x: hidden;
+display: flex;
+flex-direction: column;
+gap: 5px;
+background: rgba(255,255,255,0.05);
+border-radius: 10px;
+padding: 10px;
+}
+
+.left-panel h3 {
+font-size: 14px;
+margin: 5px 0 10px 0;
+text-align: center;
+}
+
+/* Compact slider styling for left panel */
+.left-panel .param-group {
+margin-bottom: 10px;
+}
+
+.left-panel .param-group-header {
+padding: 8px 10px;
+font-size: 13px;
+}
+
+.left-panel .param-item {
+margin-bottom: 8px;
+}
+
+.left-panel .param-label {
+font-size: 12px;
+margin-bottom: 3px;
+}
+
+.left-panel .slider-container {
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.left-panel input[type="range"] {
+flex: 1;
+height: 6px;
+}
+
+.left-panel .param-value {
+min-width: 35px;
+font-size: 12px;
+padding: 3px 6px;
+}
+
+/* Mobile responsiveness - move panel below canvas on small screens */
+@media (max-width: 1100px) {
+.left-panel {
+position: relative;
+left: 0;
+width: 100%;
+max-height: none;
+margin-bottom: 20px;
+}
+}
+/* REVERSIBLE CHANGE END */
+
+/* Annotation list */
+.annotation-list {
+background: rgba(255,255,255,0.1);
+border-radius: 15px;
+padding: 15px;
+margin: 20px 0;
+max-height: 300px;
+overflow-y: auto;
+}
+
+.annotation-list h3 {
+text-align: center;
+margin-bottom: 15px;
+font-size: 1.1em;
+}
+
+.annotation-item {
+background: rgba(255,255,255,0.15);
+border-radius: 10px;
+padding: 12px;
+margin-bottom: 10px;
+cursor: pointer;
+transition: all 0.2s;
+border: 2px solid transparent;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.annotation-item:hover {
+background: rgba(255,255,255,0.25);
+transform: translateX(-3px);
+}
+
+.annotation-item.selected {
+border-color: #4CAF50;
+background: rgba(76, 175, 80, 0.2);
+}
+
+.annotation-item-info {
+flex: 1;
+}
+
+.annotation-item-title {
+font-weight: bold;
+margin-bottom: 5px;
+}
+
+.annotation-item-score {
+font-size: 0.9em;
+color: #ffd700;
+}
+
+.annotation-item-actions {
+display: flex;
+gap: 5px;
+}
+
+.annotation-item-btn {
+padding: 5px 10px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+font-size: 0.85em;
+background: rgba(255,255,255,0.2);
+color: white;
+transition: all 0.2s;
+}
+
+.annotation-item-btn:hover {
+background: rgba(255,255,255,0.4);
+transform: scale(1.05);
+}
+
+.annotation-item-btn.edit {
+background: linear-gradient(45deg, #2196F3, #1976D2);
+}
+
+.annotation-item-btn.delete {
+background: linear-gradient(45deg, #ff416c, #ff4b2b);
+}
+
+/* Right side control panel - ONLY PREVIEW NOW */
+.control-panel {
+position: absolute;
+right: -190px;
+top: 0;
+width: 180px;
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+/* Mobile responsiveness - move panel below canvas on small screens */
+@media (max-width: 900px) {
+.control-panel {
+position: relative;
+right: 0;
+width: 100%;
+margin-top: 20px;
+}
+}
+
+/* Preview canvas */
+.preview-container {
+margin-top: 15px;
+padding: 10px;
+background: rgba(255,255,255,0.1);
+border-radius: 10px;
+text-align: center;
+}
+
+.preview-label {
+font-size: 12px;
+color: rgba(255,255,255,0.8);
+margin-bottom: 5px;
+}
+
+#previewCanvas {
+width: 100%;
+max-width: 150px;
+border-radius: 8px;
+border: 2px solid rgba(255,255,255,0.3);
+display: none;
+}
+
+#previewCanvas.active {
+display: block;
+}
+
 .controls {
 display: flex;
 justify-content: center;
@@ -437,13 +675,16 @@ font-size: 1.2em;
 </head>
 <body>
 <div class="container">
-<div class="header">
-<h1>🥑 YOLO Dataset Creator - Enhanced</h1>
-<p>אוסף תמונות משותף לאימון מודל זיהוי עם פרמטרים מתקדמים</p>
+<div class="header" style="padding: 13px 0;">
+<h1 style="font-size: 1.275em; margin-bottom: 7px;">📦 YOLO Dataset Annotation Tool</h1>
 </div>
 
-<div id="statusBar" class="status-bar connected">
-<span id="statusText">✅ מחובר למסד נתונים משותף</span>
+<div style="text-align: center; margin-bottom: 15px;">
+<div style="display: inline-block; padding: 8px 16px; background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 13px;">
+<span style="color: #4CAF50; font-weight: bold;">✓ מחובר</span>
+<span style="margin: 0 8px; color: rgba(255,255,255,0.3);">|</span>
+<span>שלום <strong id="currentUserTop"></strong></span>
+</div>
 </div>
 
 <div id="loginSection" class="login-section">
@@ -456,26 +697,15 @@ font-size: 1.2em;
 </div>
 
 <div id="mainApp" class="main-content">
-<div class="login-section">
-<p>שלום <strong id="currentUser"></strong>! 👋</p>
-<button onclick="logout()" class="btn btn-danger">התנתק</button>
-</div>
 
-<div>
-<h3>העלאת תמונה חדשה</h3>
-
-<div class="upload-zone" id="uploadZone">
-<h3>📷 העלה תמונה</h3>
-<p>לחץ כאן, גרור תמונה או צלם חדשה</p>
 <input type="file" id="imageInput" accept="image/*" style="display:none">
 <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none">
-</div>
 
-<div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
-<button onclick="document.getElementById('imageInput').click()" class="btn" style="background: linear-gradient(45deg, #4CAF50, #45a049);">
+<div style="display: flex; gap: 10px; justify-content: center; margin: 10px 0;">
+<button onclick="document.getElementById('imageInput').click()" class="btn btn-primary">
 📁 בחר קובץ
 </button>
-<button onclick="document.getElementById('cameraInput').click()" class="btn" style="background: linear-gradient(45deg, #2196F3, #1976D2);">
+<button onclick="document.getElementById('cameraInput').click()" class="btn btn-success">
 📷 צלם תמונה
 </button>
 </div>
@@ -494,6 +724,7 @@ font-size: 1.2em;
 
 <div id="canvasSection" class="hidden">
 <div class="canvas-container">
+
 <div class="zoom-controls" id="zoomControls">
 <button class="zoom-btn" onclick="zoomIn()">+</button>
 <button class="zoom-btn" onclick="zoomOut()">−</button>
@@ -508,9 +739,20 @@ font-size: 1.2em;
 <button class="polygon-btn retry" onclick="retryPolygon()" title="Retry">🔄</button>
 <button class="polygon-btn accept" onclick="acceptPolygon()" title="Accept">✓</button>
 </div>
+<button class="clear-btn" onclick="clearCanvas()" title="נקה הכל">🗑️</button>
 <div class="canvas-wrapper" id="canvasWrapper">
 <canvas id="imageCanvas"></canvas>
 </div>
+
+<!-- Right side control panel - ONLY PREVIEW -->
+<div class="control-panel">
+<!-- Preview of masked crop -->
+<div class="preview-container">
+<div class="preview-label">תצוגה מקדימה:</div>
+<canvas id="previewCanvas" width="150" height="150"></canvas>
+</div>
+</div>
+
 </div>
 
 <div class="instructions">
@@ -538,17 +780,30 @@ font-size: 1.2em;
 </div>
 <div class="param-group-content" id="hiddenParams"></div>
 </div>
+
+<!-- Action buttons moved below sliders -->
+<div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+<button onclick="addCurrentAnnotation()" class="btn btn-warning" id="addAnnotationBtn" style="display:none;">
+➕ הוסף (<span id="annotationCount">0</span>)
+</button>
+<button onclick="deleteLastBox()" class="btn btn-danger" id="deleteBtn" style="display:none;">
+🗑️ מחק אחרון
+</button>
+<button onclick="saveAnnotation()" class="btn btn-success" id="saveAllBtn">
+💾 שמור הכל (<span id="saveCount">0</span>)
+</button>
+</div>
+
 </div>
 </div>
 
+<!-- Annotation List -->
+<div id="annotationListSection" class="annotation-list hidden">
+<h3>📋 רשימת אנוטציות</h3>
+<div id="annotationListContent"></div>
+</div>
+
 <div class="controls">
-                        <button onclick="addCurrentAnnotation()" class="btn btn-warning" id="addAnnotationBtn" style="display:none;">
-                            ➕ הוסף למאגר זמני (<span id="annotationCount">0</span>)
-                        </button>
-                        <button onclick="saveAnnotation()" class="btn btn-success" id="saveAllBtn">
-                            💾 שמור <span id="saveCount">0</span> אנוטציות ל-Supabase
-                        </button>
-<button onclick="clearCanvas()" class="btn btn-danger">🗑️ נקה הכל</button>
 <button onclick="resetUpload()" class="btn btn-primary">🔄 תמונה חדשה</button>
 </div>
 </div>
@@ -577,6 +832,7 @@ let annotations = [];
 let pendingBox = null;
 let mlPredictions = null;  // Store ML predictions
 let startX, startY;
+let selectedAnnotationIndex = null; // Track which annotation is being edited
 
 // Polygon drawing state
 let isPolygonMode = false;
@@ -661,54 +917,18 @@ showNotification('שגיאה בטעינת פרמטרים', 'error');
 function initApp() {
 const imageInput = document.getElementById('imageInput');
 const cameraInput = document.getElementById('cameraInput');
-const uploadZone = document.getElementById('uploadZone');
 
 // File input change handlers
 imageInput.addEventListener('change', handleImageUpload);
 cameraInput.addEventListener('change', handleImageUpload);
 
-// Click to upload
-uploadZone.addEventListener('click', () => {
-imageInput.click();
-});
-
-// Drag and drop handlers
-uploadZone.addEventListener('dragover', (e) => {
-e.preventDefault();
-e.stopPropagation();
-uploadZone.style.borderColor = 'rgba(255,255,255,0.8)';
-uploadZone.style.background = 'rgba(255,255,255,0.1)';
-});
-
-uploadZone.addEventListener('dragleave', (e) => {
-e.preventDefault();
-e.stopPropagation();
-uploadZone.style.borderColor = 'rgba(255,255,255,0.5)';
-uploadZone.style.background = 'transparent';
-});
-
-uploadZone.addEventListener('drop', (e) => {
-e.preventDefault();
-e.stopPropagation();
-uploadZone.style.borderColor = 'rgba(255,255,255,0.5)';
-uploadZone.style.background = 'transparent';
-
-const files = e.dataTransfer.files;
-if (files.length > 0) {
-const file = files[0];
-if (file.type.startsWith('image/')) {
-loadImageFile(file);
-} else {
-showNotification('❌ אנא העלה קובץ תמונה', 'error');
-}
-}
-});
-
+// Category button handlers
 const categoryBtns = document.querySelectorAll('.category-btn');
 categoryBtns.forEach(btn => {
 btn.addEventListener('click', () => selectCategory(btn));
 });
 
+// Canvas drawing event handlers
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', drawBoundingBox);
 canvas.addEventListener('mouseup', endDrawing);
@@ -740,7 +960,7 @@ function checkExistingUser() {
 const savedUser = localStorage.getItem('yolo_user');
 if (savedUser) {
 currentUser = savedUser;
-document.getElementById('currentUser').textContent = currentUser;
+document.getElementById('currentUserTop').textContent = currentUser;
 showMainApp();
 }
 }
@@ -766,7 +986,7 @@ return;
 
 currentUser = userName;
 localStorage.setItem('yolo_user', currentUser);
-document.getElementById('currentUser').textContent = currentUser;
+document.getElementById('currentUserTop').textContent = currentUser;
 showNotification('✅ שם תקין! מתחיל...', 'success');
 showMainApp();
 }
@@ -939,6 +1159,12 @@ slider.addEventListener('input', function(e) {
 const value = parseFloat(e.target.value);
 currentParameters[id] = value;
 document.getElementById(`value-${id}`).textContent = value.toFixed(1);
+
+// Auto-save if editing an existing annotation
+if (selectedAnnotationIndex !== null) {
+    annotations[selectedAnnotationIndex].parameters = {...currentParameters};
+    updateAnnotationList();
+}
 });
 }
 
@@ -958,16 +1184,26 @@ return;
 
 isDrawing = true;
 const rect = canvas.getBoundingClientRect();
-startX = e.clientX - rect.left;
-startY = e.clientY - rect.top;
+
+// Transform screen coordinates to canvas coordinates (accounting for zoom)
+const scaleX = canvas.width / rect.width;
+const scaleY = canvas.height / rect.height;
+
+startX = (e.clientX - rect.left) * scaleX;
+startY = (e.clientY - rect.top) * scaleY;
 }
 
 function drawBoundingBox(e) {
 if (!isDrawing) return;
 
 const rect = canvas.getBoundingClientRect();
-const currentX = e.clientX - rect.left;
-const currentY = e.clientY - rect.top;
+
+// Transform screen coordinates to canvas coordinates (accounting for zoom)
+const scaleX = canvas.width / rect.width;
+const scaleY = canvas.height / rect.height;
+
+const currentX = (e.clientX - rect.left) * scaleX;
+const currentY = (e.clientY - rect.top) * scaleY;
 
 drawImage();
 
@@ -1077,8 +1313,13 @@ if (!isDrawing) return;
 
 isDrawing = false;
 const rect = canvas.getBoundingClientRect();
-const endX = e.clientX - rect.left;
-const endY = e.clientY - rect.top;
+
+// Transform screen coordinates to canvas coordinates (accounting for zoom)
+const scaleX = canvas.width / rect.width;
+const scaleY = canvas.height / rect.height;
+
+const endX = (e.clientX - rect.left) * scaleX;
+const endY = (e.clientY - rect.top) * scaleY;
 
 const x = Math.min(startX, endX);
 const y = Math.min(startY, endY);
@@ -1096,8 +1337,9 @@ if (width > 20 && height > 20) {
                     product: selectedProduct
                 };
 
-                // Show the "Add Annotation" button (like index2)
+                // Show the "Add Annotation" and "Delete" buttons
                 document.getElementById('addAnnotationBtn').style.display = 'inline-block';
+                document.getElementById('deleteBtn').style.display = 'inline-block';
 
                 // Draw the box temporarily
                 drawImage();
@@ -1126,6 +1368,193 @@ if (width > 20 && height > 20) {
                 saveBtn.style.opacity = '1';
                 saveBtn.style.cursor = 'pointer';
             }
+
+            // Update annotation list
+            updateAnnotationList();
+        }
+
+        function updateAnnotationList() {
+            const listSection = document.getElementById('annotationListSection');
+            const listContent = document.getElementById('annotationListContent');
+
+            if (annotations.length === 0) {
+                listSection.classList.add('hidden');
+                return;
+            }
+
+            listSection.classList.remove('hidden');
+            listContent.innerHTML = '';
+
+            annotations.forEach((ann, index) => {
+                // Calculate overall score (average of all parameters)
+                const params = ann.parameters;
+                const scores = Object.values(params);
+                const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+
+                const item = document.createElement('div');
+                item.className = 'annotation-item';
+                if (selectedAnnotationIndex === index) {
+                    item.classList.add('selected');
+                }
+
+                item.innerHTML = `
+                    <div class="annotation-item-info">
+                        <div class="annotation-item-title">Polygon ${index + 1} - ${categoryNames[ann.category]}</div>
+                        <div class="annotation-item-score">Total Score: ${avgScore.toFixed(1)}</div>
+                    </div>
+                    <div class="annotation-item-actions">
+                        <button class="annotation-item-btn edit" onclick="editAnnotation(${index})">✏️</button>
+                        <button class="annotation-item-btn delete" onclick="deleteAnnotationFromList(${index})">🗑️</button>
+                    </div>
+                `;
+
+                listContent.appendChild(item);
+            });
+        }
+
+        function editAnnotation(index) {
+            if (index < 0 || index >= annotations.length) return;
+
+            selectedAnnotationIndex = index;
+            const ann = annotations[index];
+
+            // Load the annotation's parameters into sliders
+            currentParameters = {...ann.parameters};
+            selectedProduct = ann.product;
+
+            // Update slider values
+            Object.entries(currentParameters).forEach(([paramId, value]) => {
+                const slider = document.getElementById(`slider-${paramId}`);
+                const valueDisplay = document.getElementById(`value-${paramId}`);
+                if (slider && valueDisplay) {
+                    slider.value = value;
+                    valueDisplay.textContent = value.toFixed(1);
+                }
+            });
+
+            // Show parameters section
+            document.getElementById('parametersSection').classList.remove('hidden');
+
+            // Update list to show selection
+            updateAnnotationList();
+
+            // Show preview
+            showAnnotationPreview(ann);
+
+            showNotification(`📝 עורך Polygon ${index + 1}`, 'success');
+        }
+
+        function showAnnotationPreview(ann) {
+            if (!ann.ellipse) return;
+
+            const previewCanvas = document.getElementById('previewCanvas');
+            const previewCtx = previewCanvas.getContext('2d');
+
+            // Create crop with padding
+            const PADDING = 1.15;
+            const centerX = ann.x + ann.width / 2;
+            const centerY = ann.y + ann.height / 2;
+
+            const x1 = Math.max(0, centerX - (ann.width / 2) * PADDING);
+            const y1 = Math.max(0, centerY - (ann.height / 2) * PADDING);
+            const x2 = Math.min(canvas.width, centerX + (ann.width / 2) * PADDING);
+            const y2 = Math.min(canvas.height, centerY + (ann.height / 2) * PADDING);
+
+            const cropWidth = x2 - x1;
+            const cropHeight = y2 - y1;
+
+            // Create temp canvas for crop
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = cropWidth;
+            tempCanvas.height = cropHeight;
+            const tempCtx = tempCanvas.getContext('2d');
+
+            // Draw crop from current image
+            tempCtx.drawImage(currentImage, x1, y1, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+
+            // Transform ellipse to crop space
+            const ellipseInCropSpace = {
+                cx: ann.ellipse.cx - x1,
+                cy: ann.ellipse.cy - y1,
+                rx: ann.ellipse.rx,
+                ry: ann.ellipse.ry,
+                angle: ann.ellipse.angle
+            };
+
+            // Apply ellipse mask
+            const GRAY = 128;
+            const maskCanvas = document.createElement('canvas');
+            maskCanvas.width = cropWidth;
+            maskCanvas.height = cropHeight;
+            const maskCtx = maskCanvas.getContext('2d');
+
+            // Draw ellipse on mask
+            maskCtx.fillStyle = 'white';
+            maskCtx.fillRect(0, 0, cropWidth, cropHeight);
+            maskCtx.fillStyle = 'black';
+            maskCtx.save();
+            maskCtx.translate(ellipseInCropSpace.cx, ellipseInCropSpace.cy);
+            maskCtx.rotate(ellipseInCropSpace.angle);
+            maskCtx.beginPath();
+            maskCtx.ellipse(0, 0, ellipseInCropSpace.rx, ellipseInCropSpace.ry, 0, 0, 2 * Math.PI);
+            maskCtx.fill();
+            maskCtx.restore();
+
+            // Apply mask
+            const imageData = tempCtx.getImageData(0, 0, cropWidth, cropHeight);
+            const maskData = maskCtx.getImageData(0, 0, cropWidth, cropHeight);
+
+            for (let i = 0; i < imageData.data.length; i += 4) {
+                if (maskData.data[i] > 128) {  // Outside ellipse
+                    imageData.data[i] = GRAY;
+                    imageData.data[i + 1] = GRAY;
+                    imageData.data[i + 2] = GRAY;
+                }
+            }
+
+            tempCtx.putImageData(imageData, 0, 0);
+
+            // Draw to preview canvas (scaled to fit)
+            const scale = Math.min(150 / cropWidth, 150 / cropHeight);
+            const drawWidth = cropWidth * scale;
+            const drawHeight = cropHeight * scale;
+
+            previewCanvas.width = drawWidth;
+            previewCanvas.height = drawHeight;
+            previewCtx.drawImage(tempCanvas, 0, 0, cropWidth, cropHeight, 0, 0, drawWidth, drawHeight);
+
+            previewCanvas.classList.add('active');
+        }
+
+        function deleteAnnotationFromList(index) {
+            if (index < 0 || index >= annotations.length) return;
+
+            annotations.splice(index, 1);
+
+            // Clear selection if deleted annotation was selected
+            if (selectedAnnotationIndex === index) {
+                selectedAnnotationIndex = null;
+                document.getElementById('previewCanvas').classList.remove('active');
+            } else if (selectedAnnotationIndex > index) {
+                selectedAnnotationIndex--;
+            }
+
+            updateAnnotationCounts();
+            drawImage();
+            showNotification('🗑️ נמחק מהרשימה', 'info');
+        }
+
+        function saveEditedAnnotation() {
+            if (selectedAnnotationIndex === null) return;
+
+            // Update the annotation with current parameter values
+            annotations[selectedAnnotationIndex].parameters = {...currentParameters};
+
+            // Clear selection
+            selectedAnnotationIndex = null;
+
+            updateAnnotationList();
+            showNotification('✅ עודכן ברשימה', 'success');
         }
 
         function addCurrentAnnotation() {
@@ -1165,6 +1594,7 @@ if (width > 20 && height > 20) {
             // Clear
             pendingBox = null;
             mlPredictions = null;
+            selectedAnnotationIndex = null; // Clear any edit selection
 
             // Hide add button
             document.getElementById('addAnnotationBtn').style.display = 'none';
@@ -1172,7 +1602,7 @@ if (width > 20 && height > 20) {
             // Reset parameters (keep section visible for next annotation - like index2)
             loadParameters(selectedProduct);
 
-            // Update annotation counters
+            // Update annotation counters and list
             updateAnnotationCounts();
 
             // Ensure we're in rectangle drawing mode and zoomed out
@@ -1183,19 +1613,150 @@ if (width > 20 && height > 20) {
             drawImage();
 
             const msg = userCorrected ?
-                `✅ נשמר עם תיקונים! סה"כ ${annotations.length}` :
-                `✅ נשמר! סה"כ ${annotations.length}`;
+                `✅ הוסף לרשימה! סה"כ ${annotations.length}` :
+                `✅ הוסף לרשימה! סה"כ ${annotations.length}`;
             showNotification(msg, 'success');
+
+            // Hide delete button but keep parameters visible for next annotation
+            document.getElementById('deleteBtn').style.display = 'none';
+        }
+
+        function deleteLastBox() {
+            const wasInPolygonMode = isPolygonMode;
+
+            if (pendingBox) {
+                pendingBox = null;
+                mlPredictions = null;
+
+                // Exit polygon mode if active
+                if (isPolygonMode) {
+                    exitPolygonMode();
+                }
+
+                // Hide delete and add buttons
+                document.getElementById('deleteBtn').style.display = 'none';
+                document.getElementById('addAnnotationBtn').style.display = 'none';
+
+                // Hide preview
+                document.getElementById('previewCanvas').classList.remove('active');
+
+                // Reset parameters
+                loadParameters(selectedProduct);
+                drawImage();
+                showNotification('מחיקת מסגרת', 'info');
+
+                // Ready for immediate new drawing
+                isDrawing = false;
+            } else if (annotations.length > 0) {
+                annotations.pop();
+                updateAnnotationCounts();
+                drawImage();
+                showNotification('נמחק', 'info');
+            }
+        }
+
+        function updatePreview() {
+            if (!pendingBox) {
+                document.getElementById('previewCanvas').classList.remove('active');
+                return;
+            }
+
+            const previewCanvas = document.getElementById('previewCanvas');
+            const previewCtx = previewCanvas.getContext('2d');
+
+            // Only show preview if we have an ellipse
+            if (!pendingBox.ellipse) {
+                previewCanvas.classList.remove('active');
+                return;
+            }
+
+            // Create crop with padding
+            const PADDING = 1.15;
+            const centerX = pendingBox.x + pendingBox.width / 2;
+            const centerY = pendingBox.y + pendingBox.height / 2;
+
+            const x1 = Math.max(0, centerX - (pendingBox.width / 2) * PADDING);
+            const y1 = Math.max(0, centerY - (pendingBox.height / 2) * PADDING);
+            const x2 = Math.min(canvas.width, centerX + (pendingBox.width / 2) * PADDING);
+            const y2 = Math.min(canvas.height, centerY + (pendingBox.height / 2) * PADDING);
+
+            const cropWidth = x2 - x1;
+            const cropHeight = y2 - y1;
+
+            // Create temp canvas for crop
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = cropWidth;
+            tempCanvas.height = cropHeight;
+            const tempCtx = tempCanvas.getContext('2d');
+
+            // Draw crop from current image
+            tempCtx.drawImage(currentImage, x1, y1, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+
+            // Transform ellipse to crop space
+            const ellipseInCropSpace = {
+                cx: pendingBox.ellipse.cx - x1,
+                cy: pendingBox.ellipse.cy - y1,
+                rx: pendingBox.ellipse.rx,
+                ry: pendingBox.ellipse.ry,
+                angle: pendingBox.ellipse.angle
+            };
+
+            // Apply ellipse mask
+            const GRAY = 128;
+            const maskCanvas = document.createElement('canvas');
+            maskCanvas.width = cropWidth;
+            maskCanvas.height = cropHeight;
+            const maskCtx = maskCanvas.getContext('2d');
+
+            // Draw ellipse on mask
+            maskCtx.fillStyle = 'white';
+            maskCtx.fillRect(0, 0, cropWidth, cropHeight);
+            maskCtx.fillStyle = 'black';
+            maskCtx.save();
+            maskCtx.translate(ellipseInCropSpace.cx, ellipseInCropSpace.cy);
+            maskCtx.rotate(ellipseInCropSpace.angle);
+            maskCtx.beginPath();
+            maskCtx.ellipse(0, 0, ellipseInCropSpace.rx, ellipseInCropSpace.ry, 0, 0, 2 * Math.PI);
+            maskCtx.fill();
+            maskCtx.restore();
+
+            // Apply mask
+            const imageData = tempCtx.getImageData(0, 0, cropWidth, cropHeight);
+            const maskData = maskCtx.getImageData(0, 0, cropWidth, cropHeight);
+
+            for (let i = 0; i < imageData.data.length; i += 4) {
+                if (maskData.data[i] > 128) {  // Outside ellipse
+                    imageData.data[i] = GRAY;
+                    imageData.data[i + 1] = GRAY;
+                    imageData.data[i + 2] = GRAY;
+                }
+            }
+
+            tempCtx.putImageData(imageData, 0, 0);
+
+            // Draw to preview canvas (scaled to fit)
+            const scale = Math.min(150 / cropWidth, 150 / cropHeight);
+            const drawWidth = cropWidth * scale;
+            const drawHeight = cropHeight * scale;
+
+            previewCanvas.width = drawWidth;
+            previewCanvas.height = drawHeight;
+            previewCtx.drawImage(tempCanvas, 0, 0, cropWidth, cropHeight, 0, 0, drawWidth, drawHeight);
+
+            previewCanvas.classList.add('active');
         }
 
 function clearCanvas() {
 annotations = [];
             pendingBox = null;
             mlPredictions = null;
+            selectedAnnotationIndex = null;
             document.getElementById('addAnnotationBtn').style.display = 'none';
+            document.getElementById('deleteBtn').style.display = 'none';
+            document.getElementById('previewCanvas').classList.remove('active');
             updateAnnotationCounts();
 drawImage();
-            showNotification('נוקה', 'success');
+            showNotification('נוקה הכל', 'success');
 }
 
 function resetUpload() {
@@ -1206,7 +1767,10 @@ currentParameters = {};
 annotations = [];
             pendingBox = null;
             mlPredictions = null;
+            selectedAnnotationIndex = null;
             document.getElementById('addAnnotationBtn').style.display = 'none';
+            document.getElementById('deleteBtn').style.display = 'none';
+            document.getElementById('previewCanvas').classList.remove('active');
             updateAnnotationCounts();
 document.getElementById('categorySection').classList.add('hidden');
 document.getElementById('canvasSection').classList.add('hidden');
@@ -1214,6 +1778,7 @@ document.getElementById('parametersSection').classList.add('hidden');
 document.getElementById('loadingParams').classList.remove('hidden');
 document.getElementById('paramsContent').classList.add('hidden');
 document.getElementById('imageInput').value = '';
+document.getElementById('cameraInput').value = '';
 document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
 }
 
@@ -1348,7 +1913,11 @@ throw new Error(`Database save failed: ${error.message}`);
 }
 
 showNotification(`✅ נשמר בהצלחה! ${annotations.length} אובייקטים`, 'success');
-resetUpload();
+
+// Clear saved annotations but keep image loaded for more annotations
+annotations = [];
+updateAnnotationCounts();
+drawImage();
 
 } catch (error) {
 console.error('Error:', error);
@@ -1449,7 +2018,11 @@ created_at: new Date().toISOString()
 
 localStorage.setItem('yolo_dataset', JSON.stringify(localData));
 showNotification('💾 נשמר מקומית בטלפון', 'success');
-resetUpload();
+
+// Clear saved annotations but keep image loaded for more annotations
+annotations = [];
+updateAnnotationCounts();
+drawImage();
 }
 
 function showNotification(message, type) {
@@ -1554,6 +2127,9 @@ function enterPolygonMode(x, y, width, height) {
     canvas.addEventListener('click', addPolygonPoint);
     canvas.addEventListener('dblclick', closePolygon);
 
+    // Add touch support for polygon tracing on mobile
+    canvas.addEventListener('touchend', handlePolygonTouch);
+
     drawImage();
 
     // Wait for zoom animation to complete, THEN allow polygon clicks
@@ -1582,12 +2158,29 @@ function exitPolygonMode() {
     // Restore rectangle drawing handlers
     canvas.removeEventListener('click', addPolygonPoint);
     canvas.removeEventListener('dblclick', closePolygon);
+    canvas.removeEventListener('touchend', handlePolygonTouch);
 
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mousemove', drawBoundingBox);
     canvas.addEventListener('mouseup', endDrawing);
 
     drawImage();
+}
+
+function handlePolygonTouch(e) {
+    if (!isPolygonMode || isPolygonClosed) return;
+
+    e.preventDefault();
+    const touch = e.changedTouches[0];
+
+    // Create a synthetic click event
+    const clickEvent = {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        preventDefault: () => {}
+    };
+
+    addPolygonPoint(clickEvent);
 }
 
 function addPolygonPoint(e) {
@@ -1650,25 +2243,27 @@ function closePolygon(e) {
 }
 
 function positionPolygonControls() {
-    if (!fittedEllipse) return;
+    if (!polygonPoints || polygonPoints.length === 0) return;
 
     const controls = document.getElementById('polygonControls');
-    const rect = canvas.getBoundingClientRect();
-    const wrapper = document.getElementById('canvasWrapper');
-    const wrapperRect = wrapper.getBoundingClientRect();
 
-    // Calculate position on the canvas
-    // Position to the right of the ellipse center
-    const offsetX = fittedEllipse.cx + fittedEllipse.rx + 30; // 30px to the right of ellipse
-    const offsetY = fittedEllipse.cy;
+    // Find the bottom-most point of the polygon
+    let maxY = -Infinity;
+    let sumX = 0;
+    for (const p of polygonPoints) {
+        if (p.y > maxY) maxY = p.y;
+        sumX += p.x;
+    }
+    const centerX = sumX / polygonPoints.length;
 
-    // Convert canvas coordinates to screen coordinates accounting for zoom
-    const screenX = wrapperRect.left - rect.left + offsetX * zoomLevel + zoomX;
-    const screenY = wrapperRect.top - rect.top + offsetY * zoomLevel + zoomY;
+    // Position DIRECTLY TOUCHING below the polygon's lowest point
+    // Account for current zoom and pan
+    const screenY = maxY * zoomLevel + zoomY + 5; // 5px below polygon (touching)
 
-    controls.style.left = `${screenX}px`;
+    // Position controls at the bottom of polygon, centered
     controls.style.top = `${screenY}px`;
-    controls.style.transform = 'translateY(-50%)'; // Center vertically
+
+    // Keep centered horizontally (already set in CSS with left: 50%)
 }
 
 function undoLastPoint() {
@@ -1705,16 +2300,19 @@ function acceptPolygon() {
         pendingBox.polygon = [...polygonPoints];
     }
 
-    // Exit polygon mode and continue with normal flow
+    // Exit polygon mode (this resets zoom to 1:1)
     exitPolygonMode();
 
     // Parameters section is ALREADY shown (from endDrawing), no need to show again
     // Add button is ALREADY shown
 
-    // Draw the result
+    // Draw the result at 1:1 zoom
     drawImage();
 
-    showNotification('✓ Polygon accepted! Check parameters and click Add', 'success');
+    // Update preview with masked crop in right panel
+    updatePreview();
+
+    showNotification('✓ אליפסה התקבלה! בדוק פרמטרים ולחץ הוסף', 'success');
 }
 
 // ============================================
