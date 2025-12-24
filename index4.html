@@ -127,7 +127,7 @@ box-shadow: 0 4px 15px rgba(255,255,255,0.3);
 text-align: center;
 margin: 20px auto;
 position: relative;
-overflow: visible;
+overflow: hidden;
 border-radius: 15px;
 background: #2a2a2a;
 display: block;
@@ -735,9 +735,9 @@ font-size: 1.2em;
 <div>Click to add • Double-click to close</div>
 </div>
 <div class="polygon-controls" id="polygonControls">
-<button class="polygon-btn undo" onclick="undoLastPoint()" title="Undo">↶</button>
-<button class="polygon-btn retry" onclick="retryPolygon()" title="Retry">🔄</button>
-<button class="polygon-btn accept" onclick="acceptPolygon()" title="Accept">✓</button>
+<button class="polygon-btn undo" onclick="undoLastPoint()" title="Undo last point">↶</button>
+<button class="polygon-btn retry" onclick="retryPolygon()" title="Clear polygon and retry">🔄</button>
+<button class="polygon-btn accept" onclick="acceptPolygon()" title="Accept & Continue (skip polygon if not drawn)">✓</button>
 </div>
 <button class="clear-btn" onclick="clearCanvas()" title="נקה הכל">🗑️</button>
 <div class="canvas-wrapper" id="canvasWrapper">
@@ -2135,8 +2135,12 @@ function enterPolygonMode(x, y, width, height) {
     // Wait for zoom animation to complete, THEN allow polygon clicks
     setTimeout(() => {
         polygonReadyForClicks = true;
-        showNotification('🎯 Click to trace polygon (or skip and click Add button)', 'success');
+        showNotification('🎯 Click to trace polygon OR click ✓ Accept to skip', 'success');
     }, 300); // 300ms delay to ensure rectangle drawing is complete and zoom is visible
+
+    // Show Accept button immediately so users can skip polygon
+    document.getElementById('polygonControls').classList.add('active');
+    positionPolygonControls();
 }
 
 function exitPolygonMode() {
@@ -2232,6 +2236,9 @@ function closePolygon(e) {
     // Fit ellipse to polygon
     fittedEllipse = fitEllipseToPolygon(polygonPoints);
 
+    // Hide the polygon info caption (it's done, no longer needed)
+    document.getElementById('polygonInfo').classList.remove('active');
+
     // Draw the ellipse FIRST
     drawImage();
 
@@ -2243,9 +2250,18 @@ function closePolygon(e) {
 }
 
 function positionPolygonControls() {
-    if (!polygonPoints || polygonPoints.length === 0) return;
-
     const controls = document.getElementById('polygonControls');
+
+    // If no polygon points yet, position based on rectangle (pendingBox)
+    if (!polygonPoints || polygonPoints.length === 0) {
+        if (pendingBox) {
+            // Position below rectangle
+            const rectBottom = pendingBox.y + pendingBox.height;
+            const screenY = rectBottom * zoomLevel + zoomY + 5;
+            controls.style.top = `${screenY}px`;
+        }
+        return;
+    }
 
     // Find the bottom-most point of the polygon
     let maxY = -Infinity;
@@ -2284,18 +2300,22 @@ function retryPolygon() {
     // Hide buttons when retrying
     document.getElementById('polygonControls').classList.remove('active');
 
+    // Show polygon info again for new drawing
+    document.getElementById('polygonInfo').classList.add('active');
+
     drawImage();
     showNotification('Retry: Click to draw new polygon', 'success');
 }
 
 function acceptPolygon() {
-    if (!isPolygonClosed || !fittedEllipse) {
-        showNotification('Please close the polygon first', 'error');
+    // Allow accepting even without polygon - for users who want rectangle only
+    if (polygonPoints.length > 0 && (!isPolygonClosed || !fittedEllipse)) {
+        showNotification('⚠️ סגור את הפוליגון תחילה או לחץ Retry למחיקה', 'error');
         return;
     }
 
-    // Update pending box with ellipse parameters
-    if (pendingBox) {
+    // Update pending box with ellipse parameters (only if polygon was drawn)
+    if (pendingBox && isPolygonClosed && fittedEllipse) {
         pendingBox.ellipse = fittedEllipse;
         pendingBox.polygon = [...polygonPoints];
     }
@@ -2304,15 +2324,20 @@ function acceptPolygon() {
     exitPolygonMode();
 
     // Parameters section is ALREADY shown (from endDrawing), no need to show again
-    // Add button is ALREADY shown
+    // ENSURE Add button is visible (critical for mobile)
+    document.getElementById('addAnnotationBtn').style.display = 'inline-block';
+    document.getElementById('deleteBtn').style.display = 'inline-block';
 
     // Draw the result at 1:1 zoom
     drawImage();
 
-    // Update preview with masked crop in right panel
-    updatePreview();
-
-    showNotification('✓ אליפסה התקבלה! בדוק פרמטרים ולחץ הוסף', 'success');
+    // Update preview with masked crop in right panel (only if ellipse exists)
+    if (pendingBox && pendingBox.ellipse) {
+        updatePreview();
+        showNotification('✓ אליפסה התקבלה! בדוק פרמטרים ולחץ הוסף', 'success');
+    } else {
+        showNotification('✓ מלבן התקבל! בדוק פרמטרים ולחץ הוסף', 'success');
+    }
 }
 
 // ============================================
