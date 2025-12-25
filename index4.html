@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🥑 YOLO Dataset Creator - Manual Polygon</title>
+<title>🥑 Senseat Dataset Creator - Manual Polygon</title>
 <script src="https://unpkg.com/@supabase/supabase-js@2.38.0/dist/umd/supabase.js"></script>
 <script type="module">
     try {
@@ -145,8 +145,6 @@ transition: transform 0.2s ease-out;
 
 #imageCanvas {
 border-radius: 15px;
-max-width: 100%;
-max-height: 60vh;
 cursor: crosshair;
 box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 display: block;
@@ -676,7 +674,7 @@ font-size: 1.2em;
 <body>
 <div class="container">
 <div class="header" style="padding: 13px 0;">
-<h1 style="font-size: 1.275em; margin-bottom: 7px;">📦 YOLO Dataset Annotation Tool</h1>
+<h1 style="font-size: 1.275em; margin-bottom: 7px;">📦 SensEat Dataset Annotation Tool</h1>
 </div>
 
 <div style="text-align: center; margin-bottom: 15px;">
@@ -693,7 +691,7 @@ font-size: 1.2em;
 <p style="font-size: 0.9em; color: #ffeb3b; margin: 10px 0;">⚠️ רק אותיות אנגליות! דוגמה: Uri, Dan, Maya, Alex</p>
 <input type="text" id="userName" class="user-input" placeholder="Your name in English only" maxlength="15">
 <br>
-<button onclick="login()" class="btn">התחל לתרום</button>
+<button onclick="login()" class="btn">Start Tagging</button>
 </div>
 
 <div id="mainApp" class="main-content">
@@ -876,6 +874,17 @@ setTimeout(() => {
         console.log('✅ ML ready');
     }
 }, 2000);
+
+// FIXED: Handle window resize (orientation change on mobile)
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        if (isPolygonMode && pendingBox) {
+            positionPolygonControls();
+        }
+    }, 100);
+});
 });
 
 async function loadParametersFromSupabase() {
@@ -1034,8 +1043,9 @@ reader.readAsDataURL(file);
 }
 
 function setupCanvas() {
-const maxWidth = Math.min(600, window.innerWidth - 40);
-const maxHeight = 500;
+// FIXED: Make canvas half screen width with proportional height
+const maxWidth = Math.max(400, window.innerWidth / 2 - 20); // Half screen width, min 400px
+const maxHeight = window.innerHeight * 0.6; // 60% of viewport height
 
 let width = currentImage.width;
 let height = currentImage.height;
@@ -1469,8 +1479,9 @@ if (width > 20 && height > 20) {
             tempCanvas.height = cropHeight;
             const tempCtx = tempCanvas.getContext('2d');
 
-            // Draw crop from current image
-            tempCtx.drawImage(currentImage, x1, y1, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+            // FIXED: Extract from canvas (already scaled), not from original image
+            // This matches the saveAnnotation() logic
+            tempCtx.drawImage(canvas, x1, y1, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
 
             // Transform ellipse to crop space
             const ellipseInCropSpace = {
@@ -1689,8 +1700,9 @@ if (width > 20 && height > 20) {
             tempCanvas.height = cropHeight;
             const tempCtx = tempCanvas.getContext('2d');
 
-            // Draw crop from current image
-            tempCtx.drawImage(currentImage, x1, y1, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+            // FIXED: Extract from canvas (already scaled), not from original image
+            // This matches the saveAnnotation() logic
+            tempCtx.drawImage(canvas, x1, y1, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
 
             // Transform ellipse to crop space
             const ellipseInCropSpace = {
@@ -2065,10 +2077,28 @@ function resetZoom() {
 
 function applyZoom() {
     const wrapper = document.getElementById('canvasWrapper');
+    const container = document.querySelector('.canvas-container');
+
+    // FIXED: Constrain zoom pan to keep canvas within container bounds
+    if (container) {
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+        const scaledWidth = canvas.width * zoomLevel;
+        const scaledHeight = canvas.height * zoomLevel;
+
+        // Calculate maximum pan offsets to keep canvas edges within container
+        const maxX = Math.max(0, (scaledWidth - containerWidth) / 2);
+        const maxY = Math.max(0, (scaledHeight - containerHeight) / 2);
+
+        // Constrain pan to reasonable bounds
+        zoomX = Math.max(-maxX, Math.min(maxX, zoomX));
+        zoomY = Math.max(-maxY, Math.min(maxY, zoomY));
+    }
+
     wrapper.style.transform = `translate(${zoomX}px, ${zoomY}px) scale(${zoomLevel})`;
 
-    // Reposition buttons if they're visible
-    if (isPolygonClosed && fittedEllipse) {
+    // FIXED: Reposition buttons whenever in polygon mode (not just when closed)
+    if (isPolygonMode && pendingBox) {
         positionPolygonControls();
     }
 }
@@ -2251,13 +2281,27 @@ function closePolygon(e) {
 
 function positionPolygonControls() {
     const controls = document.getElementById('polygonControls');
+    const container = document.querySelector('.canvas-container');
+
+    if (!container) return;
+
+    // Get container's position on screen
+    const containerRect = container.getBoundingClientRect();
 
     // If no polygon points yet, position based on rectangle (pendingBox)
     if (!polygonPoints || polygonPoints.length === 0) {
         if (pendingBox) {
             // Position below rectangle
             const rectBottom = pendingBox.y + pendingBox.height;
-            const screenY = rectBottom * zoomLevel + zoomY + 5;
+
+            // FIXED: Convert canvas coordinates to screen coordinates accounting for zoom
+            // The canvas is scaled and translated within the container
+            const canvasRect = canvas.getBoundingClientRect();
+            const scaleX = canvasRect.width / canvas.width;
+            const scaleY = canvasRect.height / canvas.height;
+
+            // Calculate screen position of bottom edge
+            const screenY = rectBottom * scaleY + (canvasRect.top - containerRect.top) + 5;
             controls.style.top = `${screenY}px`;
         }
         return;
@@ -2265,16 +2309,16 @@ function positionPolygonControls() {
 
     // Find the bottom-most point of the polygon
     let maxY = -Infinity;
-    let sumX = 0;
     for (const p of polygonPoints) {
         if (p.y > maxY) maxY = p.y;
-        sumX += p.x;
     }
-    const centerX = sumX / polygonPoints.length;
 
-    // Position DIRECTLY TOUCHING below the polygon's lowest point
-    // Account for current zoom and pan
-    const screenY = maxY * zoomLevel + zoomY + 5; // 5px below polygon (touching)
+    // FIXED: Convert canvas coordinates to screen coordinates accounting for zoom
+    const canvasRect = canvas.getBoundingClientRect();
+    const scaleY = canvasRect.height / canvas.height;
+
+    // Calculate screen position of polygon bottom edge, relative to container
+    const screenY = maxY * scaleY + (canvasRect.top - containerRect.top) + 5;
 
     // Position controls at the bottom of polygon, centered
     controls.style.top = `${screenY}px`;
